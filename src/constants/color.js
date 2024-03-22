@@ -1,3 +1,4 @@
 export const AppColors = {
-    statusBarColor:"#1ca3ac"
+    statusBarColor:"#1ca3ac",
+    inputPrimary:"#EBDAEC"
 }

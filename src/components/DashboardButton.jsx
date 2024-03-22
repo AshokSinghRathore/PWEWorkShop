@@ -19,7 +19,7 @@ const DashboardButton = ({onPress,text,image}) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: 170,
+    width: "45%",
     height: 170,
     backgroundColor: '#f0f0f0',
     borderWidth: 1,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   label: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: 'Poppins-Bold',
     color: 'black',
     textAlign: 'center',

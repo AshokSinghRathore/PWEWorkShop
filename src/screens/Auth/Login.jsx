@@ -1,44 +1,57 @@
-import {
-  Image,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-  View,
-  SafeAreaView,
-} from 'react-native';
-import React, {useRef, useState} from 'react';
-import PhoneInput from 'react-native-phone-number-input';
+import {Image, Text, StyleSheet, SafeAreaView, Alert} from 'react-native';
+import React, {useState} from 'react';
+import CustomTextInput from '../../components/UI/CustomTextInput';
+import CustomButton from '../../components/UI/CustomButton';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-const Login = ({ navigation}) => {
-  const [value, setValue] = useState('');
-  const [formattedValue, setFormattedValue] = useState('');
-  const [code, setCode] = useState('');
-  const [CountryCode, setCountryCode] = useState('IN');
-  const [Confirm, setConfirm] = useState(null);
-  function SendCode() {
-    setConfirm(true);
-  }
-  const [otpBoxes, setOtpBoxes] = useState(Array(6).fill(''));
-  const otpInputs = useRef([]);
-
-  const handleInputChange = (index, value) => {
-    const updatedOtpBoxes = [...otpBoxes];
-    updatedOtpBoxes[index] = value;
-    setOtpBoxes(updatedOtpBoxes);
-
-    if (index < otpBoxes.length - 1 && value) {
-      otpInputs.current[index + 1].focus();
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import {emailValidator} from '../../helpers/emailValidator';
+import {passwordValidator} from '../../helpers/passwordValidator';
+import {useDispatch} from 'react-redux';
+import {setCred} from '../../feature/all-feature/feature-cred';
+const Login = ({navigation}) => {
+  const [email, setEmail] = useState('vimaldev@presswalaengineer.com');
+  const [password, setPassword] = useState('14640548');
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const Dispatch = useDispatch();
+  const handleLogin = async () => {
+    if (buttonLoader) return;
+    const emailError = emailValidator(email);
+    const passwordError = passwordValidator(password);
+    if (emailError || passwordError) {
+      Alert.alert('Invalid Entry', emailError || passwordError);
+      return;
     }
+    setButtonLoader(true);
+    try {
+      const authResp = await auth().signInWithEmailAndPassword(email, password);
+      const adminExist = await firestore()
+        .collection('Admins')
+        .doc(authResp.user.uid)
+        .get();
+      if (!adminExist.exists) {
+        navigation.navigate('UserDetails');
+      } else {
+        const token = await authResp.user.getIdToken();
 
-    if (index > 0 && !value) {
-      otpInputs.current[index - 1].focus();
+        Dispatch(setCred({token}));
+      }
+    } catch (error) {
+      if (error.code === 'auth/user-not-found') {
+        Alert.alert('Invalid Entry', 'User Not Found');
+      } else if (
+        error.code === 'auth/wrong-password' ||
+        error.code === 'auth/invalid-email' ||
+        error.code === 'auth/user-disabled' ||
+        error.code === 'auth/invalid-credential'
+      ) {
+        Alert.alert('Invalid Entry', 'Invalid Email or Password');
+      } else {
+        Alert.alert('Something went wrong', 'Please try again later');
+      }
     }
+    setButtonLoader(false);
   };
-
-  function ConfirmCode(){
-    navigation.navigate("UserDetails")
-  }
 
   return (
     <KeyboardAwareScrollView
@@ -49,7 +62,7 @@ const Login = ({ navigation}) => {
         backgroundColor: 'white',
       }}
       bounces={false}>
-      <SafeAreaView>
+      <SafeAreaView style={{width: '100%'}}>
         <Image
           source={require('../../assets/icon.jpeg')}
           resizeMode="contain"
@@ -61,134 +74,36 @@ const Login = ({ navigation}) => {
             marginHorizontal: 10,
           }}
         />
-        {!Confirm && (
-          <>
-            <Text
-              style={{
-                fontSize: 15,
-                color: 'black',
-                fontFamily: 'Poppins-Bold',
-                textAlign: 'center',
-                marginHorizontal: 10,
-              }}>
-              Enter Mobile Number {'\n'}Enter Your Phone Number. You Will
-              Receive A 6 Digit Code
-            </Text>
-            <PhoneInput
-              containerStyle={{
-                alignSelf: 'center',
 
-                borderColor: 'gray',
-                borderRadius: 10,
-                marginTop: 10,
-              }}
-              textContainerStyle={{borderRadius: 10}}
-              defaultCode="IN"
-              onChangeCountry={e => setCountryCode(e)}
-              value={value}
-              onChangeFormattedText={e => setFormattedValue(e)}
-              onChangeText={e => setValue(e)}
-            />
-            <TouchableOpacity
-              onPress={SendCode}
-              style={{
-                marginTop: 40,
-                backgroundColor: '#5245c4',
-                width: 200,
-                height: 50,
-                borderRadius: 15,
-                justifyContent: 'center',
-                alignItems: 'center',
-                alignSelf: 'center',
-              }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  color: 'white',
-                  fontFamily: 'Poppins-SemiBold',
-                }}>
-                Send Code
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
-
-        {Confirm && (
-          <>
-            <Text
-              style={{
-                fontSize: 15,
-                color: 'black',
-                fontFamily: 'Poppins-SemiBold',
-              }}>
-              We have sent you an SMS code on
-            </Text>
-            <Text
-              style={{
-                fontSize: 15,
-                color: 'blue',
-                fontFamily: 'Poppins-SemiBold',
-
-                width: 300,
-
-                marginBottom: 10,
-              }}>
-              +91-8427796715. <Text onPress={()=>setConfirm(null)} style={{color:"orange"}}>Edit Number</Text>
-            </Text>
-            <View style={styles.otpContainer}>
-              {otpBoxes.map((value, index) => (
-                <TextInput
-                  key={index}
-                  ref={input => (otpInputs.current[index] = input)}
-                  value={otpBoxes[index]}
-                  onChangeText={value => handleInputChange(index, value)}
-                  keyboardType="numeric"
-                  maxLength={1}
-                  style={styles.otpInput}
-                />
-              ))}
-            </View>
-            <View style={{marginTop: 20}}>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: 'black',
-                  fontFamily: 'Poppins-SemiBold',
-                }}>
-                Did'nt receive SMS?
-                <Text
-                  style={{color: 'orange'}}
-                  onPress={() => setConfirm(null)}>
-                  {' '}
-                  Resend
-                </Text>
-              </Text>
-            </View>
-
-            <TouchableOpacity
-              onPress={ConfirmCode}
-              style={{
-                marginTop: 40,
-                backgroundColor: '#5245c4',
-                width: 200,
-                height: 50,
-                borderRadius: 15,
-                justifyContent: 'center',
-                alignSelf:"center"
-              }}>
-              <Text
-                style={{
-                  textAlign: 'center',
-                  fontSize: 18,
-                  color: 'white',
-                  fontFamily: 'Poppins-SemiBold',
-                }}>
-                Submit Code
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
+        <Text
+          style={{
+            fontSize: 15,
+            color: 'black',
+            fontFamily: 'Poppins-Bold',
+            textAlign: 'center',
+            marginHorizontal: 10,
+          }}>
+          Enter Mobile Number {'\n'}Enter Your Phone Number. You Will Receive A
+          6 Digit Code
+        </Text>
+        <CustomTextInput
+          value={email}
+          onChangeText={setEmail}
+          placeHolder="Enter Email"
+          placeHolderColor={'grey'}
+        />
+        <CustomTextInput
+          value={password}
+          onChangeText={setPassword}
+          placeHolder="Enter password"
+          placeHolderColor={'grey'}
+          secure
+        />
+        <CustomButton
+          label={'Continue'}
+          onPress={handleLogin}
+          showLoader={buttonLoader}
+        />
       </SafeAreaView>
     </KeyboardAwareScrollView>
   );

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "560982462348",
+    "project_id": "presswalaengineer-86ace",
+    "storage_bucket": "presswalaengineer-86ace.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560982462348:android:fbb32eaf0fd6f6216c50a9",
+        "android_client_info": {
+          "package_name": "com.presswalaengineer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBukHGXp1s3jDPlyXuN5viSWAg9ZWx3E6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:560982462348:android:a2745c1b409d5d306c50a9",
+        "android_client_info": {
+          "package_name": "com.pweworkshop"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBukHGXp1s3jDPlyXuN5viSWAg9ZWx3E6U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,17 +1,16 @@
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { AuthContext } from '../store';
+import {NavigationContainer} from '@react-navigation/native';
 import Authenticated from './Authenticated';
 import Auth from './Auth';
+import {useSelector} from 'react-redux';
 const Navigation = () => {
-    const Authctx = React.useContext(AuthContext);
-
+  const Cred = useSelector(state => state.Cred);
   return (
-   <NavigationContainer>
-    {Authctx.isAuthenticated&&<Authenticated/>}
-    {!Authctx.isAuthenticated&&<Auth/>}
-   </NavigationContainer>
-  )
-}
+    <NavigationContainer>
+      {Cred.token && <Authenticated />}
+      {!Cred.token && <Auth />}
+    </NavigationContainer>
+  );
+};
 
-export default Navigation
+export default Navigation;
