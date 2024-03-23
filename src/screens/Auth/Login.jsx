@@ -83,8 +83,7 @@ const Login = ({navigation}) => {
             textAlign: 'center',
             marginHorizontal: 10,
           }}>
-          Enter Mobile Number {'\n'}Enter Your Phone Number. You Will Receive A
-          6 Digit Code
+          Enter your Email and Password
         </Text>
         <CustomTextInput
           value={email}
