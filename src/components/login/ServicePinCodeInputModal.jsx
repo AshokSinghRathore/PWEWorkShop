@@ -8,7 +8,14 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomTextInput from '../UI/CustomTextInput';
 import CustomButton from '../UI/CustomButton';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-const ServicePinCodeInputModal = ({isVisible, addPinCode, closeModal}) => {
+import {StyleForInputs} from '../../screens/Auth/UserDetails';
+const ServicePinCodeInputModal = ({
+  isVisible,
+  addPinCode,
+  closeModal,
+  setSyncCodeRef,
+  setWorkShopAddressRef,
+}) => {
   const [screenLoading, setScreenLoading] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [stateData, setStateData] = useState([]);
@@ -100,24 +107,32 @@ const ServicePinCodeInputModal = ({isVisible, addPinCode, closeModal}) => {
     setButtonLoader(true);
     try {
       const resp = await firestore()
-        .collection('States')
-        .doc(state.stateKey)
-        .collection('Cities')
-        .doc(city.cityKey)
-        .collection('PinCodes')
-        .doc(pinCode.pinCodeKey)
+        .collectionGroup('PinCodes')
+        .where('syncCode', '==', syncCode)
         .get();
 
-      if (resp.data().syncCode == syncCode) {
-        addPinCode({
-          workShopAddress: workShopAddress,
-          Pincode: pinCode.pincode,
-          City: city.city,
-          State: state.state,
-          pathRef: `States/${state.stateKey}/Cities/${city.cityKey}/PinCodes/${pinCode.pinCodeKey}`,
+      if (!resp.empty) {
+        let data = [];
+        resp.docs.forEach(doc => {
+          data.push({
+            workShopAddress:
+              workShopAddress +
+              ` ${city.city}, ${state.state} ${pinCode.pincode}`,
+            Pincode: pinCode.pincode,
+            City: city.city,
+            State: state.state,
+            pathRef: `States/${state.stateKey}/Cities/${city.cityKey}/PinCodes/${doc.id}`,
+          });
         });
-        setWorkShopAddress('');
-        setSyncCode('');
+        addPinCode(data);
+        setWorkShopAddressRef({
+          workShopAddress: workShopAddress,
+          State: state.state,
+          City: city.city,
+          Pincode: pinCode.pincode,
+        });
+        setSyncCodeRef(syncCode);
+        closeModal();
       } else {
         Alert.alert('Invalid Sync Code', 'Please Enter Correct Sync Code');
       }
@@ -153,6 +168,10 @@ const ServicePinCodeInputModal = ({isVisible, addPinCode, closeModal}) => {
             style={{position: 'absolute', left: 5, top: 3}}
           />
           <View style={{marginTop: 20}}></View>
+          <Text style={StyleForInputs.InputTextHeader}>
+            Your WorkShop Details
+          </Text>
+
           <CustomDropdown
             data={stateData}
             value={state}
@@ -168,6 +187,7 @@ const ServicePinCodeInputModal = ({isVisible, addPinCode, closeModal}) => {
             placeholder={'State'}
             Icon={() => <Feather color={'black'} name="map-pin" size={20} />}
           />
+
           <CustomDropdown
             value={city}
             data={cityData}
@@ -197,22 +217,22 @@ const ServicePinCodeInputModal = ({isVisible, addPinCode, closeModal}) => {
             placeholder={'PinCode'}
           />
           <CustomTextInput
-            placeHolder={'Sync Code'}
-            onChangeText={text => setSyncCode(text)}
-            value={syncCode}
+            placeHolder={'WorkShop Address'}
+            onChangeText={text => setWorkShopAddress(text)}
+            value={workShopAddress}
             placeHolderColor={'grey'}
             Style={{
               width: '80%',
-              marginTop: 10,
+              marginTop: 15,
               backgroundColor: '#e8f7ee',
               borderWidth: 0.5,
               borderColor: 'grey',
             }}
           />
           <CustomTextInput
-            placeHolder={'WorkShop Address'}
-            onChangeText={text => setWorkShopAddress(text)}
-            value={workShopAddress}
+            placeHolder={'Sync Code'}
+            onChangeText={text => setSyncCode(text)}
+            value={syncCode}
             placeHolderColor={'grey'}
             Style={{
               width: '80%',

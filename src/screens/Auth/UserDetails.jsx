@@ -7,7 +7,7 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {View} from 'react-native-animatable';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -18,15 +18,19 @@ import auth from '@react-native-firebase/auth';
 import {useDispatch} from 'react-redux';
 import {setCred} from '../../feature/all-feature/feature-cred';
 import CustomButton from '../../components/UI/CustomButton';
+import {setItem} from '../../helpers/AsyncStorageFunctions';
+import WorkShopInput from '../../components/login/WorkShopInput';
 const UserDetails = () => {
   const [Name, setName] = useState('');
   const [Mobile, setMobile] = useState('');
   const [isServicePinCodeModalVisible, setIsServicePinCodeModalVisible] =
     useState(false);
-
   const [allServicePinCodes, setAllServicePinCodes] = useState([]);
   const [submitLoader, setSubmitLoader] = useState(false);
+  const workShopAddressRef = useRef({});
+  const syncCodeRef = useRef('');
   const Dispatch = useDispatch();
+
   async function onSubmit() {
     if (submitLoader) return;
     if (!Name || !Mobile || allServicePinCodes.length <= 0) {
@@ -46,28 +50,38 @@ const UserDetails = () => {
         Name: Name,
         Mobile: Mobile,
         createdAt: new Date(),
+        syncCode: syncCodeRef.current,
+        workShopAddress: workShopAddressRef.current.workShopAddress,
+        State: workShopAddressRef.current.State,
+        City: workShopAddressRef.current.City,
+        Pincode: workShopAddressRef.current.Pincode,
       });
       await batch.commit();
       const token = await auth().currentUser.getIdToken();
-      console.log(token);
-      Dispatch(setCred({token: token}));
+      await setItem('token', token);
+      await setItem('uid', auth().currentUser.uid);
+      Dispatch(
+        setCred({
+          token: token,
+          ...{
+            Name,
+            Mobile,
+            syncCode: syncCodeRef.current,
+            workShopAddressRef: workShopAddressRef.current.workShopAddress,
+            State: workShopAddressRef.current.State,
+            City: workShopAddressRef.current.City,
+            Pincode: workShopAddressRef.current.Pincode,
+            uid: auth().currentUser.uid,
+          },
+        }),
+      );
     } catch (error) {
       Alert.alert('Something went wrong', 'Please try again later');
       console.log(error);
     }
     setSubmitLoader(false);
   }
-  function onAddServicePinCode(data) {
-    const isExits = allServicePinCodes.some(
-      item => item.pathRef === data.pathRef,
-    );
-    if (isExits) {
-      Alert.alert('Alert', 'Service Pin Code Already Exists');
-      return;
-    }
-    setAllServicePinCodes([...allServicePinCodes, data]);
-    setIsServicePinCodeModalVisible(false);
-  }
+
   return (
     <KeyboardAwareScrollView
       nestedScrollEnabled
@@ -80,15 +94,15 @@ const UserDetails = () => {
         <View style={StyleForInputs.TextInputContainer}>
           <Text style={StyleForInputs.InputTextHeader}>Name</Text>
           <TextInput
-            placeholder="Name"
+            placeholder="Enter Your Name"
             placeholderTextColor={'#414a4c'}
             value={Name}
             onChangeText={e => setName(e)}
             style={StyleForInputs.Inputstyle}
           />
-          <Text style={StyleForInputs.InputTextHeader}>Email</Text>
+          <Text style={StyleForInputs.InputTextHeader}>Mobile</Text>
           <TextInput
-            placeholder="Mobile"
+            placeholder="Enter Your Mobile"
             placeholderTextColor={'#414a4c'}
             value={Mobile}
             onChangeText={e => {
@@ -99,23 +113,11 @@ const UserDetails = () => {
             keyboardType="number-pad"
             style={StyleForInputs.Inputstyle}
           />
-          <View style={ServicePinCodeStyle.container}>
-            <View style={ServicePinCodeStyle.navbar}>
-              <Text style={ServicePinCodeStyle.textStyle}>
-                Your Service PinCodes{' '}
-              </Text>
-              <Pressable
-                style={{
-                  flexDirection: 'row',
-                  width: 100,
-                  justifyContent: 'flex-end',
-                }}
-                onPress={() => setIsServicePinCodeModalVisible(true)}>
-                <AntDesign size={24} color="black" name="pluscircleo" />
-              </Pressable>
-            </View>
-            <ShowServicePinCode data={allServicePinCodes} />
-          </View>
+          <Text style={StyleForInputs.InputTextHeader}>Work Shop Info</Text>
+          <WorkShopInput
+            onPress={() => setIsServicePinCodeModalVisible(true)}
+          />
+          <ShowServicePinCode data={allServicePinCodes} />
         </View>
       </SafeAreaView>
       <CustomButton
@@ -128,7 +130,9 @@ const UserDetails = () => {
       <ServicePinCodeInputModal
         closeModal={() => setIsServicePinCodeModalVisible(false)}
         isVisible={isServicePinCodeModalVisible}
-        addPinCode={onAddServicePinCode}
+        addPinCode={data => setAllServicePinCodes(data)}
+        setWorkShopAddressRef={e => (workShopAddressRef.current = e)}
+        setSyncCodeRef={e => (syncCodeRef.current = e)}
       />
     </KeyboardAwareScrollView>
   );
@@ -141,6 +145,7 @@ export const ServicePinCodeStyle = StyleSheet.create({
     padding: 8,
     marginVertical: 5,
     width: '100%',
+    backgroundColor: '#e8f7ee',
   },
   navbar: {
     flexDirection: 'row',

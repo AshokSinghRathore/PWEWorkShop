@@ -5,11 +5,10 @@ const CredSlice = createSlice({
   initialState: {},
   reducers: {
     setCred: (state, action) => {
-      console.log(action)
-      return action.payload
+      return action.payload;
     },
     clearCred: (state, action) => {
-      state = {};
+      return {};
     },
   },
 });
