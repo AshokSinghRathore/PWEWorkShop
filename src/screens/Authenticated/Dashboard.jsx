@@ -37,7 +37,7 @@ const Dashboard = ({navigation}) => {
           ...doc.data(),
           State: Cred.State,
           City: Cred.City,
-          Pincode: Cred.Pincode,
+          Pincode: doc.data().pincode,
           pathRef: `States/${allRef[1]}/Cities/${allRef[3]}/PinCodes/${doc.id}`,
         };
       });
