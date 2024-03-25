@@ -12,8 +12,8 @@ import {setCred} from '../../feature/all-feature/feature-cred';
 import LoadingOverlay from '../../components/UI/LoadingOverlay';
 import {getItem, setItem} from '../../helpers/AsyncStorageFunctions';
 const Login = ({navigation}) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('vimaldev@presswalaengineer.com');
+  const [password, setPassword] = useState('14640548');
   const [buttonLoader, setButtonLoader] = useState(false);
   const Dispatch = useDispatch();
   const [autoLogin, setAutoLogin] = useState(false);
