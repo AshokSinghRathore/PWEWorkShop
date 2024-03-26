@@ -2,7 +2,7 @@ import {createSlice} from '@reduxjs/toolkit';
 
 const initialState = {
   data: [],
-  lastElement: null,
+  lastElement: null
 };
 
 const DryCleanOrderSlice = createSlice({
@@ -24,21 +24,15 @@ const DryCleanOrderSlice = createSlice({
         hasMore: action.payload.hasMore,
       };
     },
-    updateDryClean: (state, action) => {
-      const newData = state.data.map(item => {
-        if (item.id === action.payload.id) {
-          return {...item, ...action.payload};
-        }
-        return item;
-      });
+
+    setShowLoader: (state, action) => {
       return {
         ...state,
-        data: newData,
+        showLoader: action.payload,
       };
     },
   },
 });
 
-export const {setDryClean, concatDryClean, updateDryClean} =
-  DryCleanOrderSlice.actions;
+export const {setDryClean, concatDryClean} = DryCleanOrderSlice.actions;
 export default DryCleanOrderSlice;

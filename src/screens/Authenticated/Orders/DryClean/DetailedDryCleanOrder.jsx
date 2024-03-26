@@ -8,10 +8,13 @@ import {TouchableOpacity} from 'react-native-gesture-handler';
 import {StyleForInputs} from '../../../Auth/UserDetails';
 import {formatDate} from '../../../../helpers/DateFunction';
 import EditDryCleanOrder from '../../../../components/DryClean/EditDryCleanOrder';
+import {useSelector} from 'react-redux';
 
 const DetailedDryCleanOrder = ({route, navigation}) => {
-  const [Data, setData] = useState(route.params);
-  const [isEdit, setIsEdit] = useState(false);
+  const Data = useSelector(state =>
+    state.DryCleanOrder.data.find(item => item.id === route.params),
+  );
+  console.log(Data);
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
@@ -19,45 +22,51 @@ const DetailedDryCleanOrder = ({route, navigation}) => {
       </SafeAreaView>
       <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <Text style={styles.detailText}>
-          Customer Name: <Text style={styles.valueText}>{Data?.user_name}</Text>
+          Customer Name:{' '}
+          <Text style={styles.valueText}>{Data?.data().user_name}</Text>
         </Text>
         <Text style={styles.detailText}>
           Quantity:{' '}
-          <Text style={styles.valueText}>{Data?.DryClean?.length}</Text>
+          <Text style={styles.valueText}>{Data?.data().DryClean?.length}</Text>
         </Text>
         <Text style={styles.detailText}>
           Pick Date:{' '}
           <Text style={styles.valueText}>
-            {Data && Data.PickDate ? formatDate(new Date(Data.PickDate)) : ''}
+            {Data && Data.data().PickDate
+              ? formatDate(new Date(Data.data().PickDate))
+              : ''}
           </Text>
         </Text>
         <Text style={styles.detailText}>
-          Pick Time: <Text style={styles.valueText}>{Data?.Picktime}</Text>
+          Pick Time:{' '}
+          <Text style={styles.valueText}>{Data?.data().Picktime}</Text>
         </Text>
         <Text style={styles.detailText}>
           Drop Date:{' '}
           <Text style={styles.valueText}>
-            {Data && Data.DropDate
-              ? formatDate(new Date(Data.DropDate))
+            {Data && Data.data().DropDate
+              ? formatDate(new Date(Data.data().DropDate))
               : 'Not Assign'}
           </Text>
         </Text>
         <Text style={styles.detailText}>
           Drop Time:{' '}
-          <Text style={styles.valueText}>{Data?.DropTime || 'Not Assign'}</Text>
+          <Text style={styles.valueText}>
+            {Data?.data().DropTime || 'Not Assign'}
+          </Text>
         </Text>
         <Text style={styles.detailText}>
           Address:{' '}
           <Text style={styles.valueText}>
-            {Data?.Address?.House +
+            {Data?.data().Address?.House +
               ', ' +
-              Data?.Address?.Area +
+              Data?.data().Address?.Area +
               ', ' +
-              Data?.Address?.City +
+              Data?.data().Address?.City +
               ', ' +
-              Data?.Address?.State +
+              Data?.data().Address?.State +
               ', ' +
-              Data?.Address?.Pincode}
+              Data?.data().Address?.Pincode}
           </Text>
         </Text>
         <View
@@ -69,12 +78,11 @@ const DetailedDryCleanOrder = ({route, navigation}) => {
           }}
         />
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('EditDryCleanOrder', {
-              data: Data,
-              setData: setData,
-            })
-          }
+          onPress={() => {
+            let cpData = Data.data();
+            delete cpData.DateOfOrder;
+            navigation.navigate('EditDryCleanOrder', cpData);
+          }}
           style={StyleForInputs.SumbitButtonStyle}>
           <Text style={StyleForInputs.SumbitButtonTextStyle}>Edit</Text>
         </TouchableOpacity>

@@ -20,116 +20,56 @@ import {
 const AllDryClean = ({navigation}) => {
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
   const PAGE_SIZE = 5;
   const Dispatch = useDispatch();
+  const [showLoader, setShowLoader] = useState(false);
+  const OrderRef = firestore()
+    .collection('Order')
+    .where('isDryClean', '==', true)
+    .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
+    .limit(PAGE_SIZE);
   const DryCleanOrder = useSelector(state => state.DryCleanOrder);
-  async function getCall() {
+  async function initialGetCall() {
     if (DryCleanOrder.data.length > 0) {
+      setScreenLoader(false);
       return;
     }
-    console.log(DryCleanOrder);
-    setLoadingMore(true);
-    try {
-      const DryCleanResp = await firestore()
-        .collection('Order')
-        .where('isDryClean', '==', true)
-        .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
-        .orderBy('DateOfOrder', 'desc')
-        .limit(PAGE_SIZE)
-        .get();
-      let hasMore = null;
-      if (!DryCleanResp.empty) {
-        hasMore = DryCleanResp.docs[DryCleanResp.docs.length - 1];
-      }
-      Dispatch(
-        setDryClean({
-          hasMore: hasMore,
-          data: DryCleanResp.docs.map(d => {
-            return {
-              ...d.data(),
-              key: d.id,
-              DateOfOrder: d.data().DateOfOrder.toDate().toISOString(),
-              expireDate: d.data().expireDate.toDate().toISOString(),
-            };
-          }),
-        }),
-      );
-      console.log("------------- initial Data -------------");
-      console.log(DryCleanResp.size);
-      console.log(DryCleanResp.docs.map(d => {
-        return {
-          ...d.data(),
-          key: d.id,
-          DateOfOrder: d.data().DateOfOrder.toDate().toISOString(),
-          expireDate: d.data().expireDate.toDate().toISOString(),
-        };
-      }))
-      console.log("------------- EOD initial Data -------------");
-
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Something Went Wrong', 'Please Try Again Later');
-    }
-    setLoadingMore(false);
+    setScreenLoader(true);
+    const data = await OrderRef.get();
+    Dispatch(
+      setDryClean({
+        lastElement: data.docs[data.docs.length - 1],
+        data: data.docs,
+      }),
+    );
+    setScreenLoader(false);
   }
+
   useEffect(() => {
-    getCall().then(() => {
-      setScreenLoader(false);
-    });
+    initialGetCall();
   }, []);
 
-  async function onEndReached() {
-    if (DryCleanOrder.data.length <= 0) {
+  async function fetchNext() {
+    if (!DryCleanOrder.lastElement) {
       return;
     }
-    setLoadingMore(true);
+    setShowLoader(true);
     try {
-      const DryCleanResp = await firestore()
-        .collection('Order')
-        .where('isDryClean', '==', true)
-        .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
-        .startAfter(DryCleanOrder.hasMore || 0)
-        .limit(PAGE_SIZE)
-        .get();
-
-
-
-
-
-      let hasMore = null;
-      let newData = DryCleanResp.docs.map(d => {
-        return {
-          ...d.data(),
-          key: d.id,
-          DateOfOrder: d.data().DateOfOrder.toDate().toISOString(),
-          expireDate: d.data().expireDate.toDate().toISOString(),
-        };
-      });
-      if (!DryCleanResp.empty) {
-        hasMore = DryCleanResp.docs[DryCleanResp.docs.length - 1];
-      }
-      console.log("------------- new Data -------------");
-      console.log(DryCleanResp.size);
-      console.log(newData);
-      console.log("------------- EOD new Data -------------");
+      const Data = await OrderRef.startAfter(
+        DryCleanOrder.lastElement || 0,
+      ).get();
       Dispatch(
-        concatDryClean({
-          hasMore: hasMore,
-          data: newData,
+        setDryClean({
+          lastElement: Data.docs[Data.docs.length - 1],
+          data: [...DryCleanOrder.data, ...Data.docs],
         }),
       );
     } catch (error) {
-      Alert.alert('Something Went Wrong', 'Please Try Again Later');
       console.log(error);
+      Alert.alert('Something went wrong', 'Please try after some time');
     }
-    setLoadingMore(false);
+    setShowLoader(false);
   }
-
-  useEffect(() => {
-    console.log(DryCleanOrder.data, '  new Data');
-  }, [DryCleanOrder]);
-
   return (
     <>
       {screenLoader ? (
@@ -140,35 +80,46 @@ const AllDryClean = ({navigation}) => {
             <Text style={styles.heading}>All DryClean Orders</Text>
             <FlatList
               contentContainerStyle={{paddingBottom: 20}}
-              onEndReachedThreshold={1}
-              onEndReached={() => {
-                if (DryCleanOrder.hasMore != null && !loadingMore) {
-                  onEndReached();
-                }
-              }}
-              keyExtractor={item => item.key}
               data={DryCleanOrder.data}
+              keyExtractor={item => item.id}
+              ListFooterComponent={() => {
+                return (
+                  <>
+                    {showLoader && (
+                      <ActivityIndicator size={'small'} color={'black'} />
+                    )}
+                  </>
+                );
+              }}
+              onEndReached={() => {
+                if (!DryCleanOrder.lastElement && showLoader) {
+                  return;
+                }
+                fetchNext();
+              }}
               renderItem={({item}) => {
                 return (
                   <View style={styles.orderContainer}>
                     <Text style={styles.detailText}>
                       Customer Name :{' '}
-                      <Text style={styles.valueText}>{item.user_name}</Text>
+                      <Text style={styles.valueText}>
+                        {item.data().user_name}
+                      </Text>
                     </Text>
                     <Text style={styles.detailText}>
-                      Order Id: <Text style={styles.valueText}>{item.key}</Text>
+                      Order Id: <Text style={styles.valueText}>{item.id}</Text>
                     </Text>
                     <Text style={styles.detailText}>
                       Date of Order:{' '}
                       <Text style={styles.valueText}>
-                        {item.DateOfOrder
-                          ? formatDate(new Date(item.DateOfOrder))
+                        {item.data().DateOfOrder
+                          ? formatDate(item.data().DateOfOrder.toDate())
                           : 'N/A'}
                       </Text>
                     </Text>
                     <TouchableOpacity
                       onPress={() => {
-                        navigation.navigate('DetailedDryCleanOrder', item);
+                        navigation.navigate('DetailedDryCleanOrder', item.id);
                       }}
                       style={styles.viewButton}>
                       <Text style={styles.viewButtonText}>View Details</Text>
@@ -176,17 +127,18 @@ const AllDryClean = ({navigation}) => {
                   </View>
                 );
               }}
-              ListFooterComponent={() => {
+              ListEmptyComponent={() => {
                 return (
-                  <>
-                    {loadingMore ? (
-                      <ActivityIndicator
-                        size={'large'}
-                        color={'white'}
-                        style={{marginTop: 10}}
-                      />
-                    ) : null}
-                  </>
+                  <Text
+                    style={{
+                      color: 'white',
+                      marginTop: 40,
+                      textAlign: 'center',
+                      fontSize: 18,
+                      fontFamily: 'Poppins-SemiBold',
+                    }}>
+                    No Orders
+                  </Text>
                 );
               }}
             />

@@ -69,7 +69,6 @@ const Login = ({navigation}) => {
       const uid = await getItem('uid');
       const token = await getItem('token');
       if (uid && token) {
-        console.log(auth().currentUser)
         let userInfo = await firestore().collection('Admins').doc(uid).get();
         delete userInfo.data().createdAt;
         Dispatch(setCred({token, ...userInfo.data(), uid}));

@@ -14,28 +14,37 @@ export default App;
 
 // import {View, Text} from 'react-native';
 // import React from 'react';
-// import firestore from '@react-native-firebase/firestore';
-// import auth from '@react-native-firebase/auth';
+// import Test from './Test';
+// import {NavigationContainer} from '@react-navigation/native';
+// import {createStackNavigator} from '@react-navigation/stack';
+
+// const Stack = createStackNavigator();
 // const App = () => {
 //   return (
-//     <View>
-//       <Text
-//         onPress={async () => {
-//           try {
-//             // logout the user
-//             // await auth().signOut();
-//             const data = await firestore().collection('States').get();
-//             data.docs.forEach(doc => {
-//               console.log(doc.data());
-//             });
-//           } catch (error) {
-//             console.log(error);
-//           }
-//         }}>
-//         App
-//       </Text>
-//     </View>
+//     <NavigationContainer>
+//       <Stack.Navigator>
+//         <Stack.Screen
+//           name="Home"
+//           component={HomeScreen}
+
+//         />
+//         <Stack.Screen name="Test" component={Test} />
+//       </Stack.Navigator>
+//     </NavigationContainer>
 //   );
 // };
 
 // export default App;
+
+
+// function HomeScreen(
+//   {
+//     navigation
+//   }
+// ) {
+//   return (
+//     <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+//       <Text onPress={() => navigation.navigate('Test')}>Test</Text>
+//     </View>
+//   );
+// }
