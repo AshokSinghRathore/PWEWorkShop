@@ -67,7 +67,7 @@ const UserDetails = () => {
             Name,
             Mobile,
             syncCode: syncCodeRef.current,
-            workShopAddressRef: workShopAddressRef.current.workShopAddress,
+            workShopAddress: workShopAddressRef.current.workShopAddress,
             State: workShopAddressRef.current.State,
             City: workShopAddressRef.current.City,
             Pincode: workShopAddressRef.current.Pincode,

@@ -6,16 +6,18 @@ import {
   Pressable,
   Alert,
 } from 'react-native';
-import React, {useState} from 'react';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {View} from 'react-native-animatable';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { View } from 'react-native-animatable';
+import { useDispatch, useSelector } from 'react-redux';
 import ShowServicePinCode from '../../../components/login/ShowServicePinCode';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
-import {clearCred} from '../../../feature/all-feature/feature-cred';
-import {removeItem} from '../../../helpers/AsyncStorageFunctions';
+import { clearCred } from '../../../feature/all-feature/feature-cred';
+import { removeItem } from '../../../helpers/AsyncStorageFunctions';
 import auth from '@react-native-firebase/auth';
-const EditProfile = ({navigation}) => {
+import { clearDryCleanOrders } from '../../../../redux/feature-dryclean';
+import { clearServicePinCode } from '../../../feature/all-feature/feature-servicepincode';
+const EditProfile = ({ navigation }) => {
   const Cred = useSelector(state => state.Cred);
   const [Name, setName] = useState(Cred.Name);
   const [Mobile, setMobile] = useState(Cred.Mobile);
@@ -28,6 +30,8 @@ const EditProfile = ({navigation}) => {
   async function onLogOut() {
     try {
       Dispatch(clearCred());
+      Dispatch(clearDryCleanOrders());
+      Dispatch(clearServicePinCode())
       await removeItem('token');
       await removeItem('uid');
       auth().signOut();
@@ -39,8 +43,8 @@ const EditProfile = ({navigation}) => {
   return (
     <KeyboardAwareScrollView
       showsVerticalScrollIndicator={false}
-      style={{flex: 1, backgroundColor: 'white'}}>
-      <SafeAreaView style={{marginHorizontal: 10, marginTop: 20}}>
+      style={{ flex: 1, backgroundColor: 'white' }}>
+      <SafeAreaView style={{ marginHorizontal: 10, marginTop: 20 }}>
         <View
           style={{
             width: '100%',
@@ -58,11 +62,11 @@ const EditProfile = ({navigation}) => {
                     text: 'Cancel',
                     style: 'cancel',
                   },
-                  {text: 'Log Out', onPress: onLogOut},
+                  { text: 'Log Out', onPress: onLogOut },
                 ],
               )
             }
-            style={{paddingHorizontal: 10}}>
+            style={{ paddingHorizontal: 10 }}>
             <SimpleLineIcons name="login" color="black" size={30} />
           </Pressable>
         </View>
@@ -95,7 +99,7 @@ const EditProfile = ({navigation}) => {
         style={StyleForInputs.SumbitButtonStyle}>
         <Text style={StyleForInputs.SumbitButtonTextStyle}>Change</Text>
       </TouchableOpacity> */}
-      <Text style={{fontSize: 24, color: 'white'}}>space</Text>
+      <Text style={{ fontSize: 24, color: 'white' }}>space</Text>
     </KeyboardAwareScrollView>
   );
 };
@@ -103,7 +107,7 @@ const EditProfile = ({navigation}) => {
 export default EditProfile;
 
 export const StyleForInputs = StyleSheet.create({
-  HeaderText: {fontSize: 20, color: 'black', fontFamily: 'Poppins-SemiBold'},
+  HeaderText: { fontSize: 20, color: 'black', fontFamily: 'Poppins-SemiBold' },
   TextInputContainer: {
     marginTop: 30,
   },
@@ -136,5 +140,5 @@ export const StyleForInputs = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
   },
-  hr: {width: '100%', height: 1, backgroundColor: 'black'},
+  hr: { width: '100%', height: 1, backgroundColor: 'black' },
 });

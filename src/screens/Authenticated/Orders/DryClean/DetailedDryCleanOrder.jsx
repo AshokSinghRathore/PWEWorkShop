@@ -1,20 +1,19 @@
-import React, {useState} from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {IroningStyles} from './AllIroning';
-import {AppColors} from '../../../../constants/color';
-import {TouchableOpacity} from 'react-native-gesture-handler';
-import {StyleForInputs} from '../../../Auth/UserDetails';
-import {formatDate} from '../../../../helpers/DateFunction';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { IroningStyles } from './AllIroning';
+import { AppColors } from '../../../../constants/color';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { StyleForInputs } from '../../../Auth/UserDetails';
+import { formatDate } from '../../../../helpers/DateFunction';
 import EditDryCleanOrder from '../../../../components/DryClean/EditDryCleanOrder';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 
-const DetailedDryCleanOrder = ({route, navigation}) => {
+const DetailedDryCleanOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
     state.DryCleanOrder.data.find(item => item.id === route.params),
   );
-  console.log(Data);
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
@@ -52,7 +51,7 @@ const DetailedDryCleanOrder = ({route, navigation}) => {
         <Text style={styles.detailText}>
           Drop Time:{' '}
           <Text style={styles.valueText}>
-            {Data?.data().DropTime || 'Not Assign'}
+            {Data?.data().Droptime || 'Not Assign'}
           </Text>
         </Text>
         <Text style={styles.detailText}>
@@ -69,6 +68,11 @@ const DetailedDryCleanOrder = ({route, navigation}) => {
               Data?.data().Address?.Pincode}
           </Text>
         </Text>
+        <Text style={[styles.detailText]}>
+          Price:{' '}
+
+          <Text style={styles.valueText}> ₹ {Data?.data().price}</Text>
+        </Text>
         <View
           style={{
             width: '100%',
@@ -79,7 +83,7 @@ const DetailedDryCleanOrder = ({route, navigation}) => {
         />
         <TouchableOpacity
           onPress={() => {
-            let cpData = Data.data();
+            let cpData = { ...Data.data(), id: Data.id };
             delete cpData.DateOfOrder;
             navigation.navigate('EditDryCleanOrder', cpData);
           }}

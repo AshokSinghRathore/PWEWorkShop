@@ -12,8 +12,8 @@ import {setCred} from '../../feature/all-feature/feature-cred';
 import LoadingOverlay from '../../components/UI/LoadingOverlay';
 import {getItem, setItem} from '../../helpers/AsyncStorageFunctions';
 const Login = ({navigation}) => {
-  const [email, setEmail] = useState('vimaldev@presswalaengineer.com');
-  const [password, setPassword] = useState('14640548');
+  const [email, setEmail] = useState('customercare@presswalaengineer.com');
+  const [password, setPassword] = useState('Safari@6511');
   const [buttonLoader, setButtonLoader] = useState(false);
   const Dispatch = useDispatch();
   const [autoLogin, setAutoLogin] = useState(false);
@@ -130,8 +130,11 @@ const Login = ({navigation}) => {
               placeHolder="Enter password"
               placeHolderColor={'grey'}
               secure
+
             />
+
             <CustomButton
+
               label={'Continue'}
               onPress={handleLogin}
               showLoader={buttonLoader}

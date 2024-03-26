@@ -12,6 +12,7 @@ const CustomTextInput = ({
 }) => {
   return (
     <>
+    
       <TextInput
         style={[CustomTextInputStyle.inputStyle,Style]}
         placeholder={placeHolder}

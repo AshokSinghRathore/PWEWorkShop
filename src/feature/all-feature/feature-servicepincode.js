@@ -15,8 +15,13 @@ const ServicePinCodeSlice = createSlice({
         servicePinCodeArray: action.payload.servicePinCodeArray,
       };
     },
+
+    clearServicePinCode: state => {
+      return initialState;
+    },
   },
 });
 
-export const {setServicePinCode} = ServicePinCodeSlice.actions;
+export const {setServicePinCode, clearServicePinCode} =
+  ServicePinCodeSlice.actions;
 export default ServicePinCodeSlice;
