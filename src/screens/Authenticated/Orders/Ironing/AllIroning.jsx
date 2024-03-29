@@ -1,8 +1,5 @@
-import { View, Text, StatusBar, StyleSheet, Button, TouchableOpacity, FlatList, ActivityIndicator, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, ToastAndroid } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native';
-import { AppColors } from '../../../../constants/color';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import { setIroning, updateIroning } from '../../../../feature/all-feature/feature-ironing';
@@ -11,6 +8,8 @@ import { styles } from '../DryClean/AllDryClean';
 import OrderControlButton from '../../../../components/UI/OrderControlButton';
 import { orderStatus } from '../../../../constants/constant';
 import AlertPromptModal from '../../../../components/UI/AlertPrompt';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Share from "react-native-share"
 const AllIroning = ({ navigation }) => {
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
@@ -28,9 +27,6 @@ const AllIroning = ({ navigation }) => {
     item: {}
   });
   const [approvalLoader, setApprovalLoader] = useState(false);
-
-
-
   async function initialGetCall() {
     if (IroningOrder.data.length > 0) {
       setScreenLoader(false);
@@ -150,6 +146,26 @@ const AllIroning = ({ navigation }) => {
                       ', ' +
                       item?.data().Address?.Pincode}
                   </Text>
+                  {"    "}
+                  <AntDesign
+                    name="sharealt"
+                    size={22}
+                    color={"red"}
+                    onPress={() => {
+                      Share.open({
+                        title: "Order Address",
+                        message: item?.data().Address?.House +
+                          ', ' +
+                          item?.data().Address?.Area +
+                          ', ' +
+                          item?.data().Address?.City +
+                          ', ' +
+                          item?.data().Address?.State +
+                          ', ' +
+                          item?.data().Address?.Pincode
+                      }).catch(err => { });
+                    }}
+                  />
                 </Text>
                 <OrderControlButton
                   status={item.data().status}

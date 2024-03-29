@@ -1,4 +1,4 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import Dashboard from '../screens/Authenticated/Dashboard';
 import AllIroning from '../screens/Authenticated/Orders/Ironing/AllIroning';
 import DetailedIroningOrder from '../screens/Authenticated/Orders/Ironing/DetailedIroningOrder';
@@ -15,11 +15,13 @@ import Subscription from '../screens/Authenticated/Subscription/Subscription';
 import EditProfile from '../screens/Authenticated/Profile/EditProfile';
 import EditDryCleanOrder from '../components/DryClean/EditDryCleanOrder.jsx';
 import EditIroningOrder from '../components/Ironing/EditIroningOrder.jsx';
+import UpdateOrderStatusDryClean from '../screens/Authenticated/Orders/DryClean/UpdateOrderStatusDryClean.jsx';
+import UpdateOrderStatusIroning from '../screens/Authenticated/Orders/Ironing/UpdateOrderStatusIroning.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
     <Stack.Navigator
-      screenOptions={{headerShown: false}}
+      screenOptions={{ headerShown: false }}
       initialRouteName="Login">
       <Stack.Screen name="Dashboard" component={Dashboard} />
       {/* Ironing */}
@@ -29,6 +31,8 @@ const Authenticated = () => {
         component={DetailedIroningOrder}
       />
       <Stack.Screen name='EditIroningOrder' component={EditIroningOrder} />
+      <Stack.Screen name="UpdateOrderStatusIroning" component={UpdateOrderStatusIroning} />
+
       {/* ------- */}
       {/* Dry Clean */}
       <Stack.Screen name="AllDryClean" component={AllDryClean} />
@@ -36,6 +40,7 @@ const Authenticated = () => {
         name="DetailedDryCleanOrder"
         component={DetailedDryCleanOrder}
       />
+      <Stack.Screen name="UpdateOrderStatusDryClean" component={UpdateOrderStatusDryClean} />
       <Stack.Screen name="EditDryCleanOrder" component={EditDryCleanOrder} />
       {/* ------- */}
 

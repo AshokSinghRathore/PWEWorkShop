@@ -18,7 +18,7 @@ const OrderControlButton = ({ onCross, onCheck, onPress, label, status }) => {
                     </Pressable>
                 </>
                     : <View style={{
-                        backgroundColor: status == orderStatus[1] ? "goldenrod" : status == orderStatus[2] ? "green" : "red",
+                        backgroundColor: (status == orderStatus[2]) ? "green" : "red",
                         alignSelf: 'center',
                         alignItems: 'center',
                         borderRadius: 6,

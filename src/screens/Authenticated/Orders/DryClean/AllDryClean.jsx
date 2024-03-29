@@ -3,7 +3,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Alert,
   FlatList,
   ActivityIndicator,
@@ -13,14 +12,14 @@ import { AppColors } from '../../../../constants/color';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import LoadingOverlay from '../../../../components/UI/LoadingOverlay';
-import { formatDate, formatTime } from '../../../../helpers/DateFunction';
 import {
   setDryClean, updateDryClean,
 } from '../../../../feature/all-feature/feature-dryclean';
 import OrderControlButton from '../../../../components/UI/OrderControlButton';
 import { orderStatus } from '../../../../constants/constant';
-import ModalLoading from '../../../../components/UI/ModalLoader';
 import AlertPromptModal from '../../../../components/UI/AlertPrompt';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import Share from "react-native-share"
 const AllDryClean = ({ navigation }) => {
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
@@ -162,6 +161,26 @@ const AllDryClean = ({ navigation }) => {
                           ', ' +
                           item?.data().Address?.Pincode}
                       </Text>
+                      {"    "}
+                      <AntDesign
+                        name="sharealt"
+                        size={22}
+                        color={"red"}
+                        onPress={() => {
+                          Share.open({
+                            title: "Order Address",
+                            message: item?.data().Address?.House +
+                              ', ' +
+                              item?.data().Address?.Area +
+                              ', ' +
+                              item?.data().Address?.City +
+                              ', ' +
+                              item?.data().Address?.State +
+                              ', ' +
+                              item?.data().Address?.Pincode
+                          }).catch(err => { });
+                        }}
+                      />
                     </Text>
                     <OrderControlButton
                       status={item.data().status}

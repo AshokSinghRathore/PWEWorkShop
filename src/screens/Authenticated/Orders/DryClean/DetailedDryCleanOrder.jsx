@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, Alert, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import { AppColors } from '../../../../constants/color';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { StyleForInputs } from '../../../Auth/UserDetails';
 import { formatDate } from '../../../../helpers/DateFunction';
-import EditDryCleanOrder from '../../../../components/DryClean/EditDryCleanOrder';
 import { useSelector } from 'react-redux';
 import { orderStatus } from '../../../../constants/constant';
+import Share from "react-native-share"
 
 const DetailedDryCleanOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
     state.DryCleanOrder.data.find(item => item.id === route.params),
   );
+
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
@@ -25,6 +25,15 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
         renderItem={() => {
           return (
             <>
+
+              <Text style={styles.detailText}>
+                Order Status:{' '}
+                <Text style={styles.valueText}>{
+                  (!Data?.data().OrderPicked) ? "Order Picked" : !(Data?.data().InProcess) ? "Order In Process" : !(Data?.data().Packaging) ? "Order Packaging" : !(Data?.data().OutForDelivery) ? "Order Out For Delivery" : "Order Delivered"
+                }
+                </Text>
+              </Text>
+
               <Text style={styles.detailText}>
                 Customer Name:{' '}
                 <Text style={styles.valueText}>{Data?.data().user_name}</Text>
@@ -76,6 +85,26 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                     ', ' +
                     Data?.data().Address?.Pincode}
                 </Text>
+                {"    "}
+                <AntDesign
+                  name="sharealt"
+                  size={22}
+                  color={"red"}
+                  onPress={() => {
+                    Share.open({
+                      title: "Order Address",
+                      message:  Data?.data().Address?.House +
+                        ', ' +
+                        Data?.data().Address?.Area +
+                        ', ' +
+                        Data?.data().Address?.City +
+                        ', ' +
+                        Data?.data().Address?.State +
+                        ', ' +
+                        Data?.data().Address?.Pincode
+                    }).catch(err => { });
+                  }}
+                />
               </Text>
               <Text style={[styles.detailText]}>
                 Delivery Price:{' '}
@@ -104,9 +133,9 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                 style={StyleForInputs.SumbitButtonStyle}>
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>Edit</Text>
               </TouchableOpacity>}
-              {Data?.data().status !== orderStatus[3] && <TouchableOpacity
+              {Data?.data().status !== orderStatus[3] && !(Data?.data().Delivered) && <TouchableOpacity
                 onPress={() => {
-                  Alert.alert('Next Drop', 'Hell Yeeaaah');
+                  navigation.navigate('UpdateOrderStatusDryClean', Data.id);
                 }}
                 style={StyleForInputs.SumbitButtonStyle}>
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>
