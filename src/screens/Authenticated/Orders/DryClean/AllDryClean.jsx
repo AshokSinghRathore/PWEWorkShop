@@ -39,10 +39,10 @@ const AllDryClean = ({ navigation }) => {
     .limit(PAGE_SIZE);
   const DryCleanOrder = useSelector(state => state.DryCleanOrder);
   async function initialGetCall() {
-    // if (DryCleanOrder.data.length > 0) {
-    //   setScreenLoader(false);
-    //   return;
-    // }
+    if (DryCleanOrder.data.length > 0) {
+      setScreenLoader(false);
+      return;
+    }
     setScreenLoader(true);
     const data = await OrderRef.get();
     Dispatch(
@@ -212,7 +212,7 @@ const AllDryClean = ({ navigation }) => {
 
 
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: AppColors.statusBarColor,
   },

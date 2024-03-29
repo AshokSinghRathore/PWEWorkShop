@@ -5,11 +5,11 @@ const initialState = {
   lastElement: null,
 };
 
-const DryCleanOrderSlice = createSlice({
+const IroningOrderSlice = createSlice({
   initialState: initialState,
-  name: 'DryCleanOrder',
+  name: 'IroningOrder',
   reducers: {
-    setDryClean: (state, action) => {
+    setIroning: (state, action) => {
       return {
         lastElement: action.payload.lastElement,
         data: action.payload.data,
@@ -17,14 +17,14 @@ const DryCleanOrderSlice = createSlice({
         showLoader: action.payload.showLoader,
       };
     },
-    concatDryClean: (state, action) => {
+    concatIroning: (state, action) => {
       return {
         lastElement: action.payload.lastElement,
         data: [...state.data, ...action.payload.data],
         hasMore: action.payload.hasMore,
       };
     },
-    updateDryClean: (state, action) => {
+    updateIroning: (state, action) => {
       const newData = state.data.map(item => {
         if (item.id === action.payload.id) {
           return action.payload;
@@ -39,6 +39,6 @@ const DryCleanOrderSlice = createSlice({
   },
 });
 
-export const {setDryClean, concatDryClean, updateDryClean} =
-  DryCleanOrderSlice.actions;
-export default DryCleanOrderSlice;
+export const {setIroning, concatIroning, updateIroning} =
+  IroningOrderSlice.actions;
+export default IroningOrderSlice;

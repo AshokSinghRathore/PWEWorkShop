@@ -10,6 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateDryClean } from '../../feature/all-feature/feature-dryclean';
 import CustomTextInput from '../UI/CustomTextInput';
+import { updateIroning } from '../../feature/all-feature/feature-ironing';
 const timeSlots = [
   { id: 1, value: '08:00', label: '08:00 - 08:15' },
   { id: 2, value: '08:15', label: '08:15 - 08:30' },
@@ -47,23 +48,38 @@ const timeSlots = [
   { id: 34, value: '16:15', label: '16:15 - 16:30' },
   { id: 35, value: '16:30', label: '16:30 - 16:45' },
   { id: 36, value: '16:45', label: '16:45 - 17:00' },
+  { id: 37, value: '17:00', label: '17:00 - 17:15' },
+  { id: 38, value: '17:15', label: '17:15 - 17:30' },
+  { id: 39, value: '17:30', label: '17:30 - 17:45' },
+  { id: 40, value: '17:45', label: '17:45 - 18:00' },
+  { id: 41, value: '18:00', label: '18:00 - 18:15' },
+  { id: 42, value: '18:15', label: '18:15 - 18:30' },
+  { id: 43, value: '18:30', label: '18:30 - 18:45' },
+  { id: 44, value: '18:45', label: '18:45 - 19:00' },
+  { id: 45, value: '19:00', label: '19:00 - 19:15' },
+  { id: 46, value: '19:15', label: '19:15 - 19:30' },
+  { id: 47, value: '19:30', label: '19:30 - 19:45' },
+  { id: 48, value: '19:45', label: '19:45 - 20:00' },
+  { id: 49, value: '20:00', label: '20:00 - 20:15' },
+  { id: 50, value: '20:15', label: '20:15 - 20:30' },
+  { id: 51, value: '20:30', label: '20:30 - 20:45' },
+  { id: 52, value: '20:45', label: '20:45 - 21:00' },
 ];
-const EditDryCleanOrder = ({ route, navigation }) => {
+const EditIroningOrder = ({ route, navigation }) => {
   const [data, setData] = useState(route.params);
   const [openDropDate, setOpenDropDate] = useState(false);
   const dropTimeRef = React.useRef();
   const dispatch = useDispatch();
   const [buttonLoader, setButtonLoader] = useState(false);
   const [remark, setRemark] = useState('');
-  const orders = useSelector(state => state.DryCleanOrder.data);
+  const orders = useSelector(state => state.IroningOrder.data);
   const openModalDropTime = () => {
     dropTimeRef.current?.open();
   };
 
 
   useEffect(() => {
-    const dropTime = timeSlots.find(item => item.label === route.params.Droptime);
-
+    const dropTime = timeSlots.find(item => item.label == route.params.Droptime);
     setData({
       ...data,
       Droptime: dropTime ? dropTime : null,
@@ -87,7 +103,7 @@ const EditDryCleanOrder = ({ route, navigation }) => {
 
       const dataGet = await respRef.get();
       dispatch(
-        updateDryClean(dataGet),
+        updateIroning(dataGet),
       );
       navigation.goBack();
     } catch (error) {
@@ -220,4 +236,4 @@ const EditDryCleanOrder = ({ route, navigation }) => {
   );
 };
 
-export default EditDryCleanOrder;
+export default EditIroningOrder;

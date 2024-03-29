@@ -14,6 +14,7 @@ import AllFeedback from '../screens/Authenticated/Feedback/AllFeedback';
 import Subscription from '../screens/Authenticated/Subscription/Subscription';
 import EditProfile from '../screens/Authenticated/Profile/EditProfile';
 import EditDryCleanOrder from '../components/DryClean/EditDryCleanOrder.jsx';
+import EditIroningOrder from '../components/Ironing/EditIroningOrder.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
@@ -27,6 +28,7 @@ const Authenticated = () => {
         name="DetailedIroningOrder"
         component={DetailedIroningOrder}
       />
+      <Stack.Screen name='EditIroningOrder' component={EditIroningOrder} />
       {/* ------- */}
       {/* Dry Clean */}
       <Stack.Screen name="AllDryClean" component={AllDryClean} />

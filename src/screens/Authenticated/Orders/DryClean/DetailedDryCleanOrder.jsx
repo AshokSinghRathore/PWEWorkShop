@@ -191,7 +191,7 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: AppColors.statusBarColor,
   },
