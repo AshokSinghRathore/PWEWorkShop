@@ -9,6 +9,7 @@ import { StyleForInputs } from '../../../Auth/UserDetails';
 import { formatDate } from '../../../../helpers/DateFunction';
 import EditDryCleanOrder from '../../../../components/DryClean/EditDryCleanOrder';
 import { useSelector } from 'react-redux';
+import { orderStatus } from '../../../../constants/constant';
 
 const DetailedDryCleanOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
@@ -94,7 +95,7 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                   marginBottom: 10,
                 }}
               />
-              <TouchableOpacity
+              {Data?.data().status !== orderStatus[3] && <TouchableOpacity
                 onPress={() => {
                   let cpData = { ...Data.data(), id: Data.id };
                   delete cpData.DateOfOrder;
@@ -102,8 +103,8 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                 }}
                 style={StyleForInputs.SumbitButtonStyle}>
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
+              </TouchableOpacity>}
+              {Data?.data().status !== orderStatus[3] && <TouchableOpacity
                 onPress={() => {
                   Alert.alert('Next Drop', 'Hell Yeeaaah');
                 }}
@@ -111,7 +112,7 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>
                   Update Order Status
                 </Text>
-              </TouchableOpacity>
+              </TouchableOpacity>}
               <TouchableOpacity
                 onPress={() => {
                   Alert.alert('Next Drop', 'Hell Yeeaaah');

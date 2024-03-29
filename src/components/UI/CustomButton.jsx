@@ -1,7 +1,7 @@
-import {View, Text, ActivityIndicator, TouchableOpacity} from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-const CustomButton = ({label, onPress, showLoader,buttonStyle}) => {
+const CustomButton = ({ label, onPress, showLoader, buttonStyle, textStyle }) => {
   return (
     <TouchableOpacity
       onPress={onPress}
@@ -15,14 +15,14 @@ const CustomButton = ({label, onPress, showLoader,buttonStyle}) => {
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-      },buttonStyle]}>
+      }, buttonStyle]}>
       <Text
-        style={{
+        style={[{
           textAlign: 'center',
           fontSize: 18,
           color: 'white',
           fontFamily: 'Poppins-SemiBold',
-        }}>
+        }, textStyle]}>
         {label}
       </Text>
       {showLoader && <ActivityIndicator size={24} color={'white'} />}

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,22 +7,31 @@ import {
   Alert,
   FlatList,
   ActivityIndicator,
+  ToastAndroid,
 } from 'react-native';
-import {AppColors} from '../../../../constants/color';
-import {useDispatch, useSelector} from 'react-redux';
+import { AppColors } from '../../../../constants/color';
+import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
 import LoadingOverlay from '../../../../components/UI/LoadingOverlay';
-import {formatDate, formatTime} from '../../../../helpers/DateFunction';
+import { formatDate, formatTime } from '../../../../helpers/DateFunction';
 import {
-  concatDryClean,
-  setDryClean,
+  setDryClean, updateDryClean,
 } from '../../../../feature/all-feature/feature-dryclean';
-const AllDryClean = ({navigation}) => {
+import OrderControlButton from '../../../../components/UI/OrderControlButton';
+import { orderStatus } from '../../../../constants/constant';
+import ModalLoading from '../../../../components/UI/ModalLoader';
+import AlertPromptModal from '../../../../components/UI/AlertPrompt';
+const AllDryClean = ({ navigation }) => {
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
   const PAGE_SIZE = 5;
   const Dispatch = useDispatch();
   const [showLoader, setShowLoader] = useState(false);
+  const [showPrompt, setShowPrompt] = useState({
+    isShow: false,
+    item: {}
+  });
+  const [approvalLoader, setApprovalLoader] = useState(false);
   const OrderRef = firestore()
     .collection('Order')
     .where('isDryClean', '==', true)
@@ -30,10 +39,10 @@ const AllDryClean = ({navigation}) => {
     .limit(PAGE_SIZE);
   const DryCleanOrder = useSelector(state => state.DryCleanOrder);
   async function initialGetCall() {
-    if (DryCleanOrder.data.length > 0) {
-      setScreenLoader(false);
-      return;
-    }
+    // if (DryCleanOrder.data.length > 0) {
+    //   setScreenLoader(false);
+    //   return;
+    // }
     setScreenLoader(true);
     const data = await OrderRef.get();
     Dispatch(
@@ -70,6 +79,36 @@ const AllDryClean = ({navigation}) => {
     }
     setShowLoader(false);
   }
+
+
+  async function orderApproval(status, order, remark) {
+    if (approvalLoader) {
+      ToastAndroid.show('Please wait, Other Order Approval in progress', ToastAndroid.SHORT);
+      return;
+
+    }
+    setApprovalLoader(true);
+    try {
+      const updateRef = firestore().collection('Order').doc(order.id);
+      let data = {
+        status: status,
+      }
+      if (remark) {
+        data['remark'] = remark
+      }
+      await updateRef.update(data);
+      const orderGet = await updateRef.get();
+      Dispatch(
+        updateDryClean(orderGet),
+      );
+      ToastAndroid.show('Order ' + status, ToastAndroid.SHORT);
+    } catch (error) {
+      Alert.alert('Something went wrong', 'Please try after some time');
+      console.log(error)
+    }
+    setApprovalLoader(false);
+  }
+
   return (
     <>
       {screenLoader ? (
@@ -79,7 +118,7 @@ const AllDryClean = ({navigation}) => {
           <View style={styles.container}>
             <Text style={styles.heading}>All DryClean Orders</Text>
             <FlatList
-              contentContainerStyle={{paddingBottom: 20}}
+              contentContainerStyle={{ paddingBottom: 20 }}
               data={DryCleanOrder.data}
               keyExtractor={item => item.id}
               ListFooterComponent={() => {
@@ -97,7 +136,8 @@ const AllDryClean = ({navigation}) => {
                 }
                 fetchNext();
               }}
-              renderItem={({item}) => {
+              renderItem={({ item }) => {
+
                 return (
                   <View style={styles.orderContainer}>
                     <Text style={styles.detailText}>
@@ -107,23 +147,35 @@ const AllDryClean = ({navigation}) => {
                       </Text>
                     </Text>
                     <Text style={styles.detailText}>
-                      Order Id: <Text style={styles.valueText}>{item.id}</Text>
+                      Customer Contact : <Text style={styles.valueText}>{item?.data().user_contact}</Text>
                     </Text>
                     <Text style={styles.detailText}>
-                      Date of Order:{' '}
+                      Address:{' '}
                       <Text style={styles.valueText}>
-                        {item.data().DateOfOrder
-                          ? formatDate(item.data().DateOfOrder.toDate())
-                          : 'N/A'}
+                        {item?.data().Address?.House +
+                          ', ' +
+                          item?.data().Address?.Area +
+                          ', ' +
+                          item?.data().Address?.City +
+                          ', ' +
+                          item?.data().Address?.State +
+                          ', ' +
+                          item?.data().Address?.Pincode}
                       </Text>
                     </Text>
-                    <TouchableOpacity
+                    <OrderControlButton
+                      status={item.data().status}
+
                       onPress={() => {
                         navigation.navigate('DetailedDryCleanOrder', item.id);
                       }}
-                      style={styles.viewButton}>
-                      <Text style={styles.viewButtonText}>View Details</Text>
-                    </TouchableOpacity>
+                      label={"View Details"}
+                      onCheck={() => orderApproval(orderStatus[2], item)}
+                      onCross={() => {
+                        setShowPrompt({ isShow: true, item: item })
+                      }}
+                    />
+
                   </View>
                 );
               }}
@@ -137,17 +189,28 @@ const AllDryClean = ({navigation}) => {
                       fontSize: 18,
                       fontFamily: 'Poppins-SemiBold',
                     }}>
+
                     No Orders
                   </Text>
                 );
               }}
             />
+
           </View>
+
         </>
       )}
+      <AlertPromptModal placeholder={"Optional"} title={"Enter Remark"} visible={showPrompt.isShow} onSubmit={(r) => {
+        orderApproval(orderStatus[3], showPrompt.item, r)
+      }} onClose={() => setShowPrompt({ ...showPrompt, isShow: false })} />
+
+
     </>
   );
 };
+
+
+
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -171,7 +234,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8f7ee',
     marginTop: 10,
     shadowColor: 'grey',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.4,
     shadowRadius: 4,
     elevation: 2,
