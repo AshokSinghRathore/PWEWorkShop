@@ -25,7 +25,6 @@ const DryCleanOrderSlice = createSlice({
       };
     },
     updateDryClean: (state, action) => {
-      console.log(action.payload);
       const newData = state.data.map(item => {
         if (item.id === action.payload.id) {
           return action.payload;

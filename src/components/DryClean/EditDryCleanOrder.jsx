@@ -54,6 +54,7 @@ const EditDryCleanOrder = ({ route, navigation }) => {
   const dropTimeRef = React.useRef();
   const dispatch = useDispatch();
   const [buttonLoader, setButtonLoader] = useState(false);
+  const [remark, setRemark] = useState('');
   const orders = useSelector(state => state.DryCleanOrder.data);
   const openModalDropTime = () => {
     dropTimeRef.current?.open();
@@ -80,6 +81,7 @@ const EditDryCleanOrder = ({ route, navigation }) => {
         DropDate: new Date(data.DropDate).toISOString(),
         Droptime: data.Droptime?.label,
         price: parseInt(data.price),
+        remark: data.remark ? data.remark : ""
       });
 
       const dataGet = await respRef.get();
@@ -149,7 +151,7 @@ const EditDryCleanOrder = ({ route, navigation }) => {
             {data.Droptime ? data.Droptime.label : 'Not Assign'}
           </Text>
         </Pressable>
-        <Text style={[StyleForInputs.InputTextHeader,{marginLeft:20,marginTop:5}]}>₹ Price</Text>
+        <Text style={[StyleForInputs.InputTextHeader, { marginLeft: 20, marginTop: 5 }]}>₹ Price</Text>
         <CustomTextInput
           label={'Price'}
           value={data?.price.toString()}
@@ -166,7 +168,20 @@ const EditDryCleanOrder = ({ route, navigation }) => {
           }
           placeHolder={'Price'}
           placeHolderColor={'#a8a8a8'}
-          Style={{ backgroundColor: '#e8f7ee', marginTop: 0}}
+          Style={{ backgroundColor: '#e8f7ee', marginTop: 0 }}
+        />
+        <Text style={[StyleForInputs.InputTextHeader, { marginLeft: 20, marginTop: 5 }]}>Remark (Optional)</Text>
+        <CustomTextInput
+          label={'Remark'}
+          value={data?.remark}
+          onChangeText={
+            (text) => {
+              setData({ ...data, remark: text });
+            }
+          }
+          placeHolder={''}
+          placeHolderColor={'#a8a8a8'}
+          Style={{ backgroundColor: '#e8f7ee', marginTop: 0 }}
         />
         <CustomButton
           showLoader={buttonLoader}
