@@ -10,12 +10,12 @@ const OrderControlButton = ({ onCross, onCheck, onPress, label, status }) => {
 
                 {status == orderStatus[1] ? <>
 
-                    <Pressable onPress={onCross} style={style.buttonContainer}>
+                    <TouchableOpacity onPress={onCross} style={style.buttonContainer}>
                         <EvilIcons name="close" size={24} style={{ top: -2 }} color="red" />
-                    </Pressable>
-                    <Pressable onPress={onCheck} style={[style.buttonContainer, { marginLeft: 10 }]}>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={onCheck} style={[style.buttonContainer, { marginLeft: 10 }]}>
                         <MaterialCommunityIcons name="check" size={22} style={{}} color="green" />
-                    </Pressable>
+                    </TouchableOpacity>
                 </>
                     : <View style={{
                         backgroundColor: (status == orderStatus[2]) ? "green" : "red",

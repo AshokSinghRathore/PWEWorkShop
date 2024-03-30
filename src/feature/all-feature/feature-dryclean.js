@@ -3,52 +3,61 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
   data: [],
   lastElement: null,
-  initialFetched: false,
+  firstFetched: true,
 };
 
 const DryCleanOrderSlice = createSlice({
+  name: 'DryClean Reducer',
   initialState: initialState,
-  name: 'DryCleanOrder',
   reducers: {
-    setDryClean: (state, action) => {
-      console.log('Setting Dry Clean');
-      return {
-        lastElement: action.payload.lastElement,
-        data: action.payload.data,
-        initialFetched: true,
-      };
+    setDryCleanOrder: (state, action) => {
+      if (state.firstFetched) {
+        // Only set firstFetched to false if it's still true
+        return {
+          ...action.payload,
+          firstFetched: false,
+        };
+      } else {
+        // If firstFetched is already false, return state without any changes
+        return {
+          ...state,
+          data: [...action.payload.data, ...state.data],
+        };
+      }
     },
-    concatDryClean: (state, action) => {
-      return {
-        lastElement: action.payload.lastElement,
-        data: [...state.data, ...action.payload.data],
-        initialFetched: true,
-      };
-    },
-    updateDryClean: (state, action) => {
-      const newData = state.data.map(item => {
-        if (item.id === action.payload.id) {
-          return action.payload;
-        }
-        return item;
-      });
+    concatDryCleanOrder: (state, action) => {
       return {
         ...state,
-        data: newData,
-        initialFetched: true,
+        ...action.payload,
       };
     },
-    realtimeData: (state, action) => {
-      console.log('real time data');
+    addElementRealTime: (state, action) => {
       return {
         ...state,
         data: [...action.payload, ...state.data],
-        initialFetched: true,
+      };
+    },
+    updateDryClean: (state, action) => {
+      const newDate = state.data.map(item => {
+        if (item.id === action.payload.id) {
+          return action.payload;
+        } else {
+          return item
+        }
+      });
+
+      return {
+        ...state,
+        data: [...newDate],
       };
     },
   },
 });
 
-export const {setDryClean, concatDryClean, updateDryClean, realtimeData} =
-  DryCleanOrderSlice.actions;
+export const {
+  setDryCleanOrder,
+  addElementRealTime,
+  concatDryCleanOrder,
+  updateDryClean,
+} = DryCleanOrderSlice.actions;
 export default DryCleanOrderSlice;
