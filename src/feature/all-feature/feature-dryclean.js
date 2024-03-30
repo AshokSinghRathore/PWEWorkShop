@@ -3,6 +3,7 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
   data: [],
   lastElement: null,
+  initialFetched: false,
 };
 
 const DryCleanOrderSlice = createSlice({
@@ -10,18 +11,18 @@ const DryCleanOrderSlice = createSlice({
   name: 'DryCleanOrder',
   reducers: {
     setDryClean: (state, action) => {
+      console.log('Setting Dry Clean');
       return {
         lastElement: action.payload.lastElement,
         data: action.payload.data,
-        hasMore: action.payload.hasMore,
-        showLoader: action.payload.showLoader,
+        initialFetched: true,
       };
     },
     concatDryClean: (state, action) => {
       return {
         lastElement: action.payload.lastElement,
         data: [...state.data, ...action.payload.data],
-        hasMore: action.payload.hasMore,
+        initialFetched: true,
       };
     },
     updateDryClean: (state, action) => {
@@ -34,11 +35,20 @@ const DryCleanOrderSlice = createSlice({
       return {
         ...state,
         data: newData,
+        initialFetched: true,
+      };
+    },
+    realtimeData: (state, action) => {
+      console.log('real time data');
+      return {
+        ...state,
+        data: [...action.payload, ...state.data],
+        initialFetched: true,
       };
     },
   },
 });
 
-export const {setDryClean, concatDryClean, updateDryClean} =
+export const {setDryClean, concatDryClean, updateDryClean, realtimeData} =
   DryCleanOrderSlice.actions;
 export default DryCleanOrderSlice;

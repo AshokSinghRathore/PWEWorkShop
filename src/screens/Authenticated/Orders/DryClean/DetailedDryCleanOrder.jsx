@@ -15,6 +15,7 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
     state.DryCleanOrder.data.find(item => item.id === route.params),
   );
 
+  const Cred = useSelector(state => state.Cred);
   return (
     <>
       <SafeAreaView style={styles.safeArea}>
@@ -91,18 +92,17 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                   size={22}
                   color={"red"}
                   onPress={() => {
+
+                    const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
+                    const customerAddress = `${Data?.data().Address?.House}, ${Data?.data().Address?.Area}, ${Data?.data().Address?.City}, ${Data?.data().Address?.State}, ${Data?.data().Address?.Pincode}`;
+                    const CustomerName = `${Data?.data().user_name}`;
+                    const ContactNumber = `${Data?.data().user_contact}`;
+                    const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\n Customer Name: ${CustomerName}\nContact Number: ${ContactNumber}`;
                     Share.open({
                       title: "Order Address",
-                      message:  Data?.data().Address?.House +
-                        ', ' +
-                        Data?.data().Address?.Area +
-                        ', ' +
-                        Data?.data().Address?.City +
-                        ', ' +
-                        Data?.data().Address?.State +
-                        ', ' +
-                        Data?.data().Address?.Pincode
-                    }).catch(err => { });
+                      message: message,
+                    }).catch(err => {
+                    });
                   }}
                 />
               </Text>

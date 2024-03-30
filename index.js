@@ -11,7 +11,7 @@ import TestStore from './redux/TestStore';
 
 function AppRedux() {
   return (
-    <Provider store={PWEWorkShopStore}>
+    <Provider store={TestStore}>
       <App />
     </Provider>
   );

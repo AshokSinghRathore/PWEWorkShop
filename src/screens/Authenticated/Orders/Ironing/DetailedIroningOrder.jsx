@@ -9,11 +9,13 @@ import { formatDate } from '../../../../helpers/DateFunction';
 import { useSelector } from 'react-redux';
 import { orderStatus } from '../../../../constants/constant';
 import Share from "react-native-share"
+import { getUrlForDirections } from '../../../../helpers/utilsfunction';
 
 const DetailedIroningOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
     state.IroningOrder.data.find(item => item.id === route.params),
   );
+  const Cred = useSelector(state => state.Cred);
 
   return (
     <>
@@ -40,10 +42,7 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                 Customer Name:{' '}
                 <Text style={styles.valueText}>{Data?.data().user_contact}</Text>
               </Text>
-              <Text style={styles.detailText}>
-                Quantity:{' '}
-                <Text style={styles.valueText}>{Data?.data().Ironing?.length}</Text>
-              </Text>
+
               <Text style={styles.detailText}>
                 Pick Date:{' '}
                 <Text style={styles.valueText}>
@@ -89,20 +88,23 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                   size={22}
                   color={"red"}
                   onPress={() => {
+
+                    const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
+                    const customerAddress = `${Data?.data().Address?.House}, ${Data?.data().Address?.Area}, ${Data?.data().Address?.City}, ${Data?.data().Address?.State}, ${Data?.data().Address?.Pincode}`;
+                    const CustomerName = `${Data?.data().user_name}`;
+                    const ContactNumber = `${Data?.data().user_contact}`;
+                    const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\n Customer Name: ${CustomerName}\nContact Number: ${ContactNumber}`;
                     Share.open({
                       title: "Order Address",
-                      message: Data?.data().Address?.House +
-                        ', ' +
-                        Data?.data().Address?.Area +
-                        ', ' +
-                        Data?.data().Address?.City +
-                        ', ' +
-                        Data?.data().Address?.State +
-                        ', ' +
-                        Data?.data().Address?.Pincode
-                    }).catch(err => { });
+                      message: message,
+                    }).catch(err => {
+                    });
                   }}
                 />
+              </Text>
+              <Text style={styles.detailText}>
+                Packaging Type:{' '}
+                <Text style={styles.valueText}>{Data?.data().packageType}</Text>
               </Text>
               <Text style={[styles.detailText]}>
                 Delivery Price:{' '}
@@ -113,10 +115,8 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                 Packaging Price:{' '}
                 <Text style={styles.valueText}> ₹ {Data?.data().packagePrice}</Text>
               </Text>
-
               <Text style={[styles.detailText]}>
                 Price:{' '}
-
                 <Text style={styles.valueText}> ₹ {Data?.data().price} {(Data?.data().usePoints || Data?.data().useWallets) ? `(${Data?.data().usePoints ? 'Points ' : ""} ${(Data?.data().usePoints && Data?.data().useWallets) ? "/" : ""} ${Data?.data().useWallets ? 'Wallet' : ""} Used )` : ""}</Text>
               </Text>
               <View
@@ -131,7 +131,6 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                 onPress={() => {
 
                   let cpData = { ...Data.data(), id: Data.id };
-                  console.log(cpData)
                   delete cpData.DateOfOrder;
                   navigation.navigate('EditIroningOrder', cpData);
                 }}

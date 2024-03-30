@@ -3,40 +3,43 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
   data: [],
   lastElement: null,
+  firstFetched: true,
 };
 
 const DryCleanOrderSlice = createSlice({
+  name: 'DryClean Reducer',
   initialState: initialState,
-  name: 'DryClean',
   reducers: {
-    setDryClean: (state, action) => {
-      return {
-        lastElement: action.payload.lastElement,
-        data: action.payload.data,
-        hasMore: action.payload.hasMore,
-        showLoader: action.payload.showLoader,
-      };
+    setDryCleanOrder: (state, action) => {
+      if (state.firstFetched) {
+        // Only set firstFetched to false if it's still true
+        return {
+          ...action.payload,
+          firstFetched: false,
+        };
+      } else {
+        // If firstFetched is already false, return state without any changes
+        return {
+          ...state,
+          data: [...action.payload.data, ...state.data],
+        };
+      }
     },
-    concatDryClean: (state, action) => {
-      return {
-        lastElement: action.payload.lastElement,
-        data: [...state.data, ...action.payload.data],
-        hasMore: action.payload.hasMore,
-      };
-    },
-
-    setShowLoader: (state, action) => {
+    concatDryCleanOrder: (state, action) => {
       return {
         ...state,
-        showLoader: action.payload,
+        ...action.payload,
       };
     },
-    clearDryCleanOrders: state => {
-      return initialState;
+    addElementRealTime: (state, action) => {
+      return {
+        ...state,
+        data: [...action.payload, ...state.data],
+      };
     },
   },
 });
 
-export const {setDryClean, concatDryClean, clearDryCleanOrders} =
+export const {setDryCleanOrder, addElementRealTime, concatDryCleanOrder} =
   DryCleanOrderSlice.actions;
 export default DryCleanOrderSlice;

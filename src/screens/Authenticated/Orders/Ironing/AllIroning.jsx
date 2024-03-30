@@ -27,25 +27,37 @@ const AllIroning = ({ navigation }) => {
     item: {}
   });
   const [approvalLoader, setApprovalLoader] = useState(false);
-  async function initialGetCall() {
-    if (IroningOrder.data.length > 0) {
-      setScreenLoader(false);
-      return;
-    }
-    setScreenLoader(true);
-    const data = await OrderRef.get();
-    Dispatch(
-      setIroning({
-        lastElement: data.docs[data.docs.length - 1],
-        data: data.docs,
-      }),
-    );
-    setScreenLoader(false);
-  }
+  const Cred = useSelector(state => state.Cred);
 
   useEffect(() => {
-    initialGetCall();
+    const unsubscribe = firestore()
+      .collection('Order')
+      .where('isIroning', '==', true)
+      .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
+      .orderBy('DateOfOrder', 'desc')
+      .limit(PAGE_SIZE)
+      .onSnapshot((querySnapshot) => {
+        try {
+        
+          const data = querySnapshot.docs;
+          Dispatch(
+            setIroning({
+              lastElement: data[data.length - 1],
+              data: data,
+            }),
+          );
+        } catch (error) {
+          console.log(error)
+          ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+        }
+
+        setScreenLoader(false);
+      });
+
+    return () => unsubscribe();
   }, []);
+
+
 
   async function fetchNext() {
     if (!IroningOrder.lastElement) {
@@ -53,9 +65,13 @@ const AllIroning = ({ navigation }) => {
     }
     setShowLoader(true);
     try {
-      const Data = await OrderRef.startAfter(
-        IroningOrder.lastElement || 0,
-      ).get();
+      const Data = await firestore()
+        .collection('Order')
+        .where('isIroning', '==', true)
+        .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
+        .startAfter(IroningOrder.lastElement || 0)
+        .limit(PAGE_SIZE)
+        .get();
       Dispatch(
         setIroning({
           lastElement: Data.docs[Data.docs.length - 1],
@@ -68,6 +84,7 @@ const AllIroning = ({ navigation }) => {
     }
     setShowLoader(false);
   }
+
 
   async function orderApproval(status, order, remark) {
     if (approvalLoader) {
@@ -152,18 +169,17 @@ const AllIroning = ({ navigation }) => {
                     size={22}
                     color={"red"}
                     onPress={() => {
+
+                      const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
+                      const customerAddress = `${item?.data().Address?.House}, ${item?.data().Address?.Area}, ${item?.data().Address?.City}, ${item?.data().Address?.State}, ${item?.data().Address?.Pincode}`;
+                      const CustomerName = `${item?.data().user_name}`;
+                      const ContactNumber = `${item?.data().user_contact}`;
+                      const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}`;
                       Share.open({
                         title: "Order Address",
-                        message: item?.data().Address?.House +
-                          ', ' +
-                          item?.data().Address?.Area +
-                          ', ' +
-                          item?.data().Address?.City +
-                          ', ' +
-                          item?.data().Address?.State +
-                          ', ' +
-                          item?.data().Address?.Pincode
-                      }).catch(err => { });
+                        message: message,
+                      }).catch(err => {
+                      });
                     }}
                   />
                 </Text>

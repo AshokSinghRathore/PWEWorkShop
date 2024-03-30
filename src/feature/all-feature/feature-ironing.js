@@ -13,15 +13,13 @@ const IroningOrderSlice = createSlice({
       return {
         lastElement: action.payload.lastElement,
         data: action.payload.data,
-        hasMore: action.payload.hasMore,
-        showLoader: action.payload.showLoader,
       };
     },
     concatIroning: (state, action) => {
       return {
         lastElement: action.payload.lastElement,
         data: [...state.data, ...action.payload.data],
-        hasMore: action.payload.hasMore,
+
       };
     },
     updateIroning: (state, action) => {
