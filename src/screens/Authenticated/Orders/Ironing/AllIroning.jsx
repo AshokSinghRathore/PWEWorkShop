@@ -1,8 +1,7 @@
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, ToastAndroid } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, ToastAndroid, Alert } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import { setIroning, updateIroning } from '../../../../feature/all-feature/feature-ironing';
 import LoadingOverlay from '../../../../components/UI/LoadingOverlay';
 import { styles } from '../DryClean/AllDryClean';
 import OrderControlButton from '../../../../components/UI/OrderControlButton';
@@ -10,6 +9,7 @@ import { orderStatus } from '../../../../constants/constant';
 import AlertPromptModal from '../../../../components/UI/AlertPrompt';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Share from "react-native-share"
+import { addElementRealTimeIroning, concatIroningOrder, setIroningOrder, updateIroning } from '../../../../feature/all-feature/feature-ironing';
 const AllIroning = ({ navigation }) => {
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
@@ -29,32 +29,52 @@ const AllIroning = ({ navigation }) => {
   const [approvalLoader, setApprovalLoader] = useState(false);
   const Cred = useSelector(state => state.Cred);
 
-  useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Order')
-      .where('isIroning', '==', true)
-      .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
-      .orderBy('DateOfOrder', 'desc')
-      .limit(PAGE_SIZE)
-      .onSnapshot((querySnapshot) => {
-        try {
-        
-          const data = querySnapshot.docs;
+  const initialAndRealtime = useCallback(
+    query => {
+
+      if (query == null || !query) {
+        setScreenLoader(false);
+        return;
+      }
+      try {
+        let fetchedData = new Set();
+        query.docChanges().forEach(fetchedOrder => {
+          if (fetchedOrder.type == 'added') {
+            let isExist = IroningOrder.data.find(
+              oldItem => oldItem.id == fetchedOrder.doc.id,
+            );
+            if (!isExist) {
+              fetchedData.add(fetchedOrder.doc);
+            }
+          }
+        });
+        let newData = Array.from(fetchedData);
+        if (IroningOrder.firstFetched) {
           Dispatch(
-            setIroning({
-              lastElement: data[data.length - 1],
-              data: data,
+            setIroningOrder({
+              data: newData,
+              lastElement: newData[newData.length - 1],
             }),
           );
-        } catch (error) {
-          console.log(error)
-          ToastAndroid.show('Something went wrong', ToastAndroid.SHORT);
+        } else {
+          Dispatch(addElementRealTimeIroning(newData));
         }
+      } catch (error) {
+        console.log(error)
+        ToastAndroid.show('Something Wrong Happen, Trying Again', ToastAndroid.SHORT);
+      }
+      setScreenLoader(false);
+    },
+    [IroningOrder, Dispatch],
+  );
 
-        setScreenLoader(false);
-      });
+  useEffect(() => {
+    const unSubscribe = OrderRef
+      .onSnapshot(initialAndRealtime);
 
-    return () => unsubscribe();
+    return () => {
+      unSubscribe();
+    };
   }, []);
 
 
@@ -65,17 +85,14 @@ const AllIroning = ({ navigation }) => {
     }
     setShowLoader(true);
     try {
-      const Data = await firestore()
-        .collection('Order')
-        .where('isIroning', '==', true)
-        .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
-        .startAfter(IroningOrder.lastElement || 0)
-        .limit(PAGE_SIZE)
-        .get();
+      const Data = await OrderRef.startAfter(
+        IroningOrder.lastElement || 0,
+      ).get();
+      const sendData = [...IroningOrder.data, ...Data.docs];
       Dispatch(
-        setIroning({
+        concatIroningOrder({
+          data: sendData,
           lastElement: Data.docs[Data.docs.length - 1],
-          data: [...IroningOrder.data, ...Data.docs],
         }),
       );
     } catch (error) {

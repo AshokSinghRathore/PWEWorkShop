@@ -47,6 +47,7 @@ const AllDryClean = ({ navigation }) => {
   const initialAndRealtime = useCallback(
     query => {
       if (query == null || !query) {
+        setScreenLoader(false);
         return;
       }
       try {
@@ -73,7 +74,7 @@ const AllDryClean = ({ navigation }) => {
           Dispatch(addElementRealTime(newData));
         }
       } catch (error) {
-        ToastAndroid.show('Error');
+        ToastAndroid.show('Something Wrong Happen, Trying Again', ToastAndroid.SHORT);
       }
       setScreenLoader(false);
     },

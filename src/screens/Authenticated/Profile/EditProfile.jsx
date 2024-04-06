@@ -26,7 +26,6 @@ const EditProfile = ({ navigation }) => {
   async function onSubmit() {
     navigation.goBack();
   }
-
   async function onLogOut() {
     try {
       Dispatch(clearCred());

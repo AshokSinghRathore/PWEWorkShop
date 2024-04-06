@@ -56,7 +56,7 @@ const Authenticated = () => {
       {/* ------- */}
 
       {/* Bill */}
-      <Stack.Screen name="AllBill" component={AllBill} />
+      {/* <Stack.Screen name="AllBill" component={AllBill} /> */}
       {/* <Stack.Screen name='' component={Det} */}
       {/* ------- */}
 

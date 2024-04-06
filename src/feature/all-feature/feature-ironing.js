@@ -3,40 +3,61 @@ import {createSlice} from '@reduxjs/toolkit';
 const initialState = {
   data: [],
   lastElement: null,
+  firstFetched: true,
 };
 
 const IroningOrderSlice = createSlice({
+  name: 'Ironing Reducer',
   initialState: initialState,
-  name: 'IroningOrder',
   reducers: {
-    setIroning: (state, action) => {
+    setIroningOrder: (state, action) => {
+      if (state.firstFetched) {
+        // Only set firstFetched to false if it's still true
+        return {
+          ...action.payload,
+          firstFetched: false,
+        };
+      } else {
+        // If firstFetched is already false, return state without any changes
+        return {
+          ...state,
+          data: [...action.payload.data, ...state.data],
+        };
+      }
+    },
+    concatIroningOrder: (state, action) => {
       return {
-        lastElement: action.payload.lastElement,
-        data: action.payload.data,
+        ...state,
+        ...action.payload,
       };
     },
-    concatIroning: (state, action) => {
+    addElementRealTimeIroning: (state, action) => {
       return {
-        lastElement: action.payload.lastElement,
-        data: [...state.data, ...action.payload.data],
-
+        ...state,
+        data: [...action.payload, ...state.data],
       };
     },
     updateIroning: (state, action) => {
-      const newData = state.data.map(item => {
+      const newDate = state.data.map(item => {
         if (item.id === action.payload.id) {
           return action.payload;
+        } else {
+          return item
         }
-        return item;
       });
+
       return {
         ...state,
-        data: newData,
+        data: [...newDate],
       };
     },
   },
 });
 
-export const {setIroning, concatIroning, updateIroning} =
-  IroningOrderSlice.actions;
+export const {
+  setIroningOrder,
+  addElementRealTimeIroning,
+  concatIroningOrder,
+  updateIroning,
+} = IroningOrderSlice.actions;
 export default IroningOrderSlice;

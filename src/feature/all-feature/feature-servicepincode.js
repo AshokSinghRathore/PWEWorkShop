@@ -19,9 +19,22 @@ const ServicePinCodeSlice = createSlice({
     clearServicePinCode: state => {
       return initialState;
     },
+
+    updateServicePinCode: (state, action) => {
+      return {
+        planePinCodeArray: [...state.planePinCodeArray],
+        servicePinCodeArray: state.servicePinCodeArray.map(e => {
+          if (e.pathRef == action.payload.pathRef) {
+            return action.payload;
+          } else {
+            return e;
+          }
+        }),
+      };
+    },
   },
 });
 
-export const {setServicePinCode, clearServicePinCode} =
+export const {setServicePinCode, clearServicePinCode, updateServicePinCode} =
   ServicePinCodeSlice.actions;
 export default ServicePinCodeSlice;

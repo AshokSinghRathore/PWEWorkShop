@@ -3,6 +3,7 @@ import Cred from './all-feature/feature-cred';
 import ServicePinCodeSlice from './all-feature/feature-servicepincode';
 import DryCleanSlice from './all-feature/feature-dryclean';
 import IroningOrderSlice from './all-feature/feature-ironing';
+import BluetoothSlice from './all-feature/feature-bluetooth';
 
 const PWEWorkShopStore = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const PWEWorkShopStore = configureStore({
     ServicePinCode: ServicePinCodeSlice.reducer,
     DryCleanOrder: DryCleanSlice.reducer,
     IroningOrder: IroningOrderSlice.reducer,
+    BluetoothSlice: BluetoothSlice.reducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({

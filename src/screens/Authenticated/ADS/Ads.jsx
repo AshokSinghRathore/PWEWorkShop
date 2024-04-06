@@ -1,36 +1,117 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, Alert, } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { IroningStyles } from '../Orders/Ironing/AllIroning';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { AppColors } from '../../../constants/color';
+import { checkAndGetPermission } from '../Dashboard';
+import LoadingOverlay from '../../../components/UI/LoadingOverlay';
+import { useDispatch, useSelector } from 'react-redux';
+import OurAds from '../../../components/ADS/OurAds';
+import AddForm from '../../../components/ADS/AddForm';
+import firestore from '@react-native-firebase/firestore';
+import storage from '@react-native-firebase/storage';
+import { updateServicePinCode } from '../../../feature/all-feature/feature-servicepincode';
 
 const Ads = ({ navigation }) => {
-    const [googleAds,setGoogleAds] = useState(false)
-    const [nonGoogleAds,setNonGoogleAds] = useState(true)
+  const [screenLoader, setScreenLoader] = useState(false);
+  const ServicePinCode = useSelector(state => state.ServicePinCode);
+  const [selectedPinCode, setSelectedPinCode] = useState({});
+  const [addModal, setAddModal] = useState(false);
+  const [deleteLoader, setDeleteLoader] = useState("");
+  const Dispatch = useDispatch();
+
+  async function get() {
+    setScreenLoader(true);
+    await checkAndGetPermission()
+    setScreenLoader(false);
+  }
+  useEffect(() => {
+    get()
+  }, []);
+
+  async function onRemove(e) {
+    setDeleteLoader(e.pathRef)
+    try {
+
+      await storage().refFromURL(e.adUrl).delete()
+      await firestore().doc(e.pathRef).update({
+        adUrl: "",
+        websiteUrl: ""
+      })
+      Dispatch(updateServicePinCode({
+        ...e,
+        adUrl: "",
+        websiteUrl: ""
+      }))
+    } catch (error) {
+     if (error?.code=="storage/object-not-found"){
+      await firestore().doc(e.pathRef).update({
+        adUrl: "",
+        websiteUrl: ""
+      })
+      Dispatch(updateServicePinCode({
+        ...e,
+        adUrl: "",
+        websiteUrl: ""
+      }))
+     }
+     else{
+
+       Alert.alert("Something went Wrong", "Please Try Again Later");
+     }
+    }
+    setDeleteLoader("")
+  }
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAwareScrollView bounces={false} style={styles.container}>
-        <View style={styles.headerContainer}>
-          <Text style={styles.heading}>Manage Ads</Text>
-        </View>
-            <TouchableOpacity onPress={()=>{
-                setGoogleAds(!googleAds);
-                setNonGoogleAds(!nonGoogleAds)
-            }} style={[IroningStyles.IroningContainer,{flexDirection:"row",justifyContent:"space-around",marginTop:100},googleAds&&{backgroundColor:"green"}]}>
-                <Image source={require("../../../assets/google-ads.png")} resizeMode='contain' style={{width:100,height:100}} />
-                <Text style={{fontSize:30,color:googleAds?"white": "black",fontFamily:"Poppins-Bold",alignSelf:"center"}}>Google Ads</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={()=>{
-                setGoogleAds(!googleAds);
-                setNonGoogleAds(!nonGoogleAds)
-            }} style={[IroningStyles.IroningContainer,{flexDirection:"row",justifyContent:"space-around",marginTop:100},nonGoogleAds&&{backgroundColor:"green"}]}>
-                <Image source={require("../../../assets/3rd-party-ad.png")} resizeMode='contain' style={{width:100,height:100}} />
-                <Text style={{fontSize:30,color: nonGoogleAds?"white": "black",fontFamily:"Poppins-Bold",alignSelf:"center"}}>3rd Party Ads</Text>
-            </TouchableOpacity>
-     </KeyboardAwareScrollView>
+      {screenLoader ? <LoadingOverlay /> : <FlatList
+        contentContainerStyle={styles.container}
+        data={[1]}
+        renderItem={() => {
+          return (
+            <View>
+              <Text style={styles.heading}>Ads Manager</Text>
+              <FlatList
+                ListHeaderComponent={() => <Text style={[styles.heading, { marginTop: 10, fontSize: 17, borderBottomWidth: 1, borderBottomColor: "#ccc", color: "white" }]}>Running ADS</Text>}
+                data={ServicePinCode.servicePinCodeArray.filter((e) => e.adUrl)}
+                renderItem={({ item }) => {
+                  return <OurAds
+                    data={item}
+                    isDeleting={deleteLoader}
+                    isRunning
+                    onDelete={(e) => onRemove(e)}
+                    onAdd={() => {
+                      setSelectedPinCode(item)
+                      setAddModal(true)
+                    }}
+                  />
+                }}
+              />
+              <FlatList
+                ListHeaderComponent={() => <Text style={[styles.heading, { marginTop: 10, fontSize: 17, borderBottomWidth: 1, borderBottomColor: "#ccc", color: "white" }]}>Create ADS</Text>}
+                data={ServicePinCode.servicePinCodeArray.filter((e) => !e.adUrl)}
+                renderItem={({ item }) => {
+
+                  return <OurAds
+                    data={item}
+                    onAdd={() => {
+                      setSelectedPinCode(item)
+                      setAddModal(true)
+                    }}
+                  />
+                }}
+              />
+            </View>
+          );
+        }}
+      />}
+      <AddForm
+        closeModal={() => setAddModal(false)}
+        isVisible={addModal}
+        data={selectedPinCode}
+      />
     </SafeAreaView>
   );
 };
@@ -42,6 +123,8 @@ const styles = StyleSheet.create({
   },
   container: {
     marginHorizontal: 10,
+    marginVertical: 10,
+    paddingBottom: 40
   },
   headerContainer: {
     flexDirection: 'row',
@@ -51,7 +134,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 24,
-    color: 'black',
+    color: "black",
     fontFamily: 'Poppins-Bold',
   },
   addButton: {
@@ -59,7 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 5,
     elevation: 5,
-  },  floatingButton: {
+  }, floatingButton: {
     position: 'absolute',
     bottom: 20,
     right: 20,

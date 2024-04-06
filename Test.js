@@ -140,9 +140,7 @@ const Test = () => {
                     marginVertical: 10,
                   }}>
                   <Text
-                    onPress={() =>
-                      console.log(DryCleanOrder.firstFetched, firstFetched)
-                    }
+                    
                     style={{
                       color: 'red',
                       fontSize: 18,

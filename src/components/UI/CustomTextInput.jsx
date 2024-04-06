@@ -1,6 +1,6 @@
-import {View, Text, TextInput, StyleSheet} from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import React from 'react';
-import {AppColors} from '../../constants/color';
+import { AppColors } from '../../constants/color';
 
 const CustomTextInput = ({
   value,
@@ -12,9 +12,9 @@ const CustomTextInput = ({
 }) => {
   return (
     <>
-    
+
       <TextInput
-        style={[CustomTextInputStyle.inputStyle,Style]}
+        style={[CustomTextInputStyle.inputStyle, Style]}
         placeholder={placeHolder}
         placeholderTextColor={placeHolderColor}
         value={value}
@@ -32,10 +32,11 @@ const CustomTextInputStyle = StyleSheet.create({
     alignSelf: 'center',
     width: '90%',
     backgroundColor: AppColors.inputPrimary,
-    marginTop:25,
-    marginBottom:10,
-    borderRadius:8,
-    padding:10,
-    fontFamily:"Poppins-Medium",
+    marginTop: 25,
+    marginBottom: 10,
+    borderRadius: 8,
+    padding: 10,
+    fontFamily: "Poppins-Medium",
+    color: "black"
   },
 });
