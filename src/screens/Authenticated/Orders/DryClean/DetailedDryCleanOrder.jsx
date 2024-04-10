@@ -9,6 +9,7 @@ import { formatDate } from '../../../../helpers/DateFunction';
 import { useSelector } from 'react-redux';
 import { orderStatus } from '../../../../constants/constant';
 import Share from "react-native-share"
+import { PrintBill } from '../../../../helpers/PrintFunction';
 
 const DetailedDryCleanOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
@@ -143,8 +144,12 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                 </Text>
               </TouchableOpacity>}
               <TouchableOpacity
-                onPress={() => {
-                  Alert.alert('Next Drop', 'Hell Yeeaaah');
+                onPress={async () => {
+                  const customerAddress = `${Data?.data().Address?.House}, ${Data?.data().Address?.Area}, ${Data?.data().Address?.City}, ${Data?.data().Address?.State}, ${Data?.data().Address?.Pincode}`;
+                  const CustomerName = `${Data?.data().user_name}`;
+                  const ContactNumber = `${Data?.data().user_contact}`;
+
+                  PrintBill(CustomerName, customerAddress, ContactNumber, Data?.data().DryClean,"Dry Clean")
                 }}
                 style={StyleForInputs.SumbitButtonStyle}>
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>

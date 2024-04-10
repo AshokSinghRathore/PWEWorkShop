@@ -25,7 +25,7 @@ import auth from '@react-native-firebase/auth';
 import { clearCred } from '../../feature/all-feature/feature-cred';
 import { removeItem } from '../../helpers/AsyncStorageFunctions';
 import { checkPermission, checkPermissions } from '../../permission/checkPermission';
-import { PERMISSIONS, openSettings, requestMultiple } from 'react-native-permissions';
+import { PERMISSIONS, RESULTS, openSettings, requestMultiple } from 'react-native-permissions';
 import { requestPermission, requestPermissions } from '../../permission/RequestPermission';
 import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
 import ItemList from '../../components/UI/ItemList';
@@ -319,6 +319,7 @@ const Dashboard = ({ navigation }) => {
   }, [scanDevices]);
 
   const scanBluetoothDevice = async () => {
+    console.log("e")
     setLoading(true);
     try {
       const request = await requestMultiple([
@@ -326,9 +327,7 @@ const Dashboard = ({ navigation }) => {
         PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
         PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       ]);
-
       if (request['android.permission.ACCESS_FINE_LOCATION'] === RESULTS.GRANTED) {
-        console.log("permission granted")
         scanDevices();
         setLoading(false);
       } else {
