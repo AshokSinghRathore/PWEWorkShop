@@ -37,9 +37,12 @@ const DryCleanOrderSlice = createSlice({
         data: [...action.payload, ...state.data],
       };
     },
+    clearDryClean: state => {
+      return initialState;
+    },
   },
 });
 
-export const {setDryCleanOrder, addElementRealTime, concatDryCleanOrder} =
+export const {setDryCleanOrder, addElementRealTime, concatDryCleanOrder,clearDryClean} =
   DryCleanOrderSlice.actions;
 export default DryCleanOrderSlice;

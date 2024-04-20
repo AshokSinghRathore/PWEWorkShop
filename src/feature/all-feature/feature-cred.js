@@ -1,5 +1,9 @@
 import {createSlice} from '@reduxjs/toolkit';
 
+const initialState = {
+
+};
+
 const CredSlice = createSlice({
   name: 'cred',
   initialState: {},
@@ -8,7 +12,7 @@ const CredSlice = createSlice({
       return action.payload;
     },
     clearCred: (state, action) => {
-      return {};
+      return initialState;
     },
   },
 });

@@ -19,4 +19,15 @@ buildscript {
     }
 }
 
+subprojects {  // <-- Add this line
+    afterEvaluate {project ->
+        if (project.hasProperty("android")) {
+            android {
+                compileSdkVersion 34
+                buildToolsVersion '34.0.0'
+            }
+        }
+    }
+}
+
 apply plugin: "com.facebook.react.rootproject"

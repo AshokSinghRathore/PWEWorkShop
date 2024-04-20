@@ -6,11 +6,11 @@ const initialState = {
   firstFetched: true,
 };
 
-const IroningOrderSlice = createSlice({
-  name: 'Ironing Reducer',
+const ConcernOrderSlice = createSlice({
+  name: 'Concern Reducer',
   initialState: initialState,
   reducers: {
-    setIroningOrder: (state, action) => {
+    setConcernOrder: (state, action) => {
       if (state.firstFetched) {
         // Only set firstFetched to false if it's still true
         return {
@@ -25,27 +25,24 @@ const IroningOrderSlice = createSlice({
         };
       }
     },
-    concatIroningOrder: (state, action) => {
+    concatConcernOrder: (state, action) => {
       return {
         ...state,
         ...action.payload,
       };
     },
-    addElementRealTimeIroning: (state, action) => {
+    addElementRealTime: (state, action) => {
       return {
         ...state,
         data: [...action.payload, ...state.data],
       };
     },
-    deleteIroning: (state, action) => {
-      return initialState;
-    },
-    updateIroning: (state, action) => {
+    updateConcern: (state, action) => {
       const newDate = state.data.map(item => {
         if (item.id === action.payload.id) {
           return action.payload;
         } else {
-          return item;
+          return item
         }
       });
 
@@ -58,10 +55,9 @@ const IroningOrderSlice = createSlice({
 });
 
 export const {
-  setIroningOrder,
-  addElementRealTimeIroning,
-  concatIroningOrder,
-  updateIroning,
-  deleteIroning,
-} = IroningOrderSlice.actions;
-export default IroningOrderSlice;
+  setConcernOrder,
+  addElementRealTime,
+  concatConcernOrder,
+  updateConcern,
+} = ConcernOrderSlice.actions;
+export default ConcernOrderSlice;

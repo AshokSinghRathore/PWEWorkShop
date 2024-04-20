@@ -17,6 +17,7 @@ import EditDryCleanOrder from '../components/DryClean/EditDryCleanOrder.jsx';
 import EditIroningOrder from '../components/Ironing/EditIroningOrder.jsx';
 import UpdateOrderStatusDryClean from '../screens/Authenticated/Orders/DryClean/UpdateOrderStatusDryClean.jsx';
 import UpdateOrderStatusIroning from '../screens/Authenticated/Orders/Ironing/UpdateOrderStatusIroning.jsx';
+import DetailedConcern from '../screens/Authenticated/Concern/DetailedConcern.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
@@ -52,7 +53,7 @@ const Authenticated = () => {
 
       {/* Concern */}
       <Stack.Screen name="AllConcern" component={AllConcern} />
-      <Stack.Screen name="DetailedConcern" component={DetailedCoupon} />
+      <Stack.Screen name="DetailedConcern" component={DetailedConcern} />
       {/* ------- */}
 
       {/* Bill */}

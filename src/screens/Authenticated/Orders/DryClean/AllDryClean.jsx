@@ -23,8 +23,11 @@ import { orderStatus } from '../../../../constants/constant';
 import AlertPromptModal from '../../../../components/UI/AlertPrompt';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Share from "react-native-share"
-import { formatTime } from '../../../../helpers/DateFunction';
+import { formatDate, formatTime } from '../../../../helpers/DateFunction';
+import { PrintBill } from '../../../../helpers/PrintFunction';
 const AllDryClean = ({ navigation }) => {
+  const ConnectedBluetoothDevice = useSelector(state => state.BluetoothSlice);
+
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
   const PAGE_SIZE = 5;
@@ -140,6 +143,41 @@ const AllDryClean = ({ navigation }) => {
         updateDryClean(orderGet),
       );
       ToastAndroid.show('Order ' + status, ToastAndroid.SHORT);
+      if (status == orderStatus[2]) {
+
+
+        if (!ConnectedBluetoothDevice.boundAddress || !ConnectedBluetoothDevice.name) {
+          Alert.alert("Alert", "Printer Not Connected")
+        }
+
+        try {
+          const customerAddress = `${order?.data().Address?.House}, ${order?.data().Address?.Area}, ${order?.data().Address?.City}, ${order?.data().Address?.State}, ${order?.data().Address?.Pincode}`;
+          const CustomerName = `${order?.data().user_name}`;
+          const ContactNumber = `${order?.data().user_contact}`;
+          let price = {
+            price: order?.data().price,
+            delivery: order?.data().deliveryCharge
+          }
+          let pickorder = {
+            date: order && order.data().PickDate
+              ? formatDate(new Date(order.data().PickDate))
+              : 'Not Assign',
+            time: order?.data().Picktime || 'Not Assign'
+          }
+          let Droporder = {
+            date: order && order.data().DropDate
+              ? formatDate(new Date(order.data().DropDate))
+              : 'Not Assign',
+            time: order?.data().Droptime || 'Not Assign'
+          }
+          await PrintBill(CustomerName, customerAddress, ContactNumber, order?.data().DryClean, "Dry Clean", price, pickorder, Droporder)
+        }
+        catch (error) {
+          console.log(error)
+          Alert.alert("Something went wrong", "Please try after some time")
+        }
+
+      }
     } catch (error) {
       Alert.alert('Something went wrong', 'Please try after some time');
       console.log(error)

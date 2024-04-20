@@ -10,11 +10,13 @@ import { useSelector } from 'react-redux';
 import { orderStatus } from '../../../../constants/constant';
 import Share from "react-native-share"
 import { getUrlForDirections } from '../../../../helpers/utilsfunction';
+import { PrintBill } from '../../../../helpers/PrintFunction';
 
 const DetailedIroningOrder = ({ route, navigation }) => {
   const Data = useSelector(state =>
     state.IroningOrder.data.find(item => item.id === route.params),
   );
+  const ConnectedBluetoothDevice = useSelector(state => state.BluetoothSlice);
   const Cred = useSelector(state => state.Cred);
 
   return (
@@ -39,7 +41,7 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                 <Text style={styles.valueText}>{Data?.data().user_name}</Text>
               </Text>
               <Text style={styles.detailText}>
-                Customer Name:{' '}
+                Customer Contact:{' '}
                 <Text style={styles.valueText}>{Data?.data().user_contact}</Text>
               </Text>
 
@@ -147,8 +149,39 @@ const DetailedIroningOrder = ({ route, navigation }) => {
                 </Text>
               </TouchableOpacity>}
               <TouchableOpacity
-                onPress={() => {
-                  Alert.alert('Next Drop', 'Hell Yeeaaah');
+                onPress={async () => {
+
+                  if (!ConnectedBluetoothDevice.boundAddress || !ConnectedBluetoothDevice.name) {
+                    Alert.alert("Alert", "Printer Not Connected")
+                  }
+                  try {
+
+
+                    const customerAddress = `${Data?.data().Address?.House}, ${Data?.data().Address?.Area}, ${Data?.data().Address?.City}, ${Data?.data().Address?.State}, ${Data?.data().Address?.Pincode}`;
+                    const CustomerName = `${Data?.data().user_name}`;
+                    const ContactNumber = `${Data?.data().user_contact}`;
+                    let price = {
+                      price: Data?.data().price,
+                      delivery: Data?.data().deliveryCharge
+                    }
+                    let pickData = {
+                      date: Data && Data.data().PickDate
+                        ? formatDate(new Date(Data.data().PickDate))
+                        : 'Not Assign',
+                      time: Data?.data().Picktime || 'Not Assign'
+                    }
+                    let DropData = {
+                      date: Data && Data.data().DropDate
+                        ? formatDate(new Date(Data.data().DropDate))
+                        : 'Not Assign',
+                      time: Data?.data().Droptime || 'Not Assign'
+                    }
+                    await PrintBill(CustomerName, customerAddress, ContactNumber, Data?.data().Ironing, "Ironing", price, pickData, DropData)
+                  }
+                  catch (error) {
+                    console.log(error)
+                    Alert.alert("Something went wrong", "Please try after some time")
+                  }
                 }}
                 style={StyleForInputs.SumbitButtonStyle}>
                 <Text style={StyleForInputs.SumbitButtonTextStyle}>

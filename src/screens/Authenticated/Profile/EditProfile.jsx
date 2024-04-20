@@ -15,8 +15,10 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import { clearCred } from '../../../feature/all-feature/feature-cred';
 import { removeItem } from '../../../helpers/AsyncStorageFunctions';
 import auth from '@react-native-firebase/auth';
-import { clearDryCleanOrders } from '../../../../redux/feature-dryclean';
+import { clearDryClean } from '../../../../redux/feature-dryclean';
 import { clearServicePinCode } from '../../../feature/all-feature/feature-servicepincode';
+import { clearBluetooth } from '../../../feature/all-feature/feature-bluetooth';
+import { deleteIroning } from '../../../feature/all-feature/feature-ironing';
 const EditProfile = ({ navigation }) => {
   const Cred = useSelector(state => state.Cred);
   const [Name, setName] = useState(Cred.Name);
@@ -29,11 +31,13 @@ const EditProfile = ({ navigation }) => {
   async function onLogOut() {
     try {
       Dispatch(clearCred());
-      Dispatch(clearDryCleanOrders());
+      Dispatch(clearDryClean());
       Dispatch(clearServicePinCode())
+      Dispatch(clearBluetooth());
+      Dispatch(deleteIroning())
       await removeItem('token');
       await removeItem('uid');
-      auth().signOut();
+      auth().signOut().catch((e)=>{"Ra"})
     } catch (error) {
       console.log(error)
     }
