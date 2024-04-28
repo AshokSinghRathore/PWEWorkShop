@@ -35,19 +35,20 @@ const AllCoupon = ({navigation}) => {
   const couponRef = firestore()
     .collection('Coupons')
     .where('admin_uid', '==', Cred.uid)
-    .where('isActive', '==', true).orderBy("createdAt","desc")
+    .where('isActive', '==', true)
     .limit(PAGE_SIZE);
   async function getCall() {
     setLoading(true);
     try {
       const couponResp = await couponRef.get();
       if (!couponResp.empty) {
+
         Dispatch(
           setCoupon({
             data: couponResp.docs.map(e => {
               return {...e.data(), id: e.id};
             }),
-            lastElement: couponResp?.docs[couponResp?.docChanges.length - 1],
+            lastElement: couponResp?.docs[couponResp?.docs.length - 1],
           }),
         );
       }
@@ -60,7 +61,7 @@ const AllCoupon = ({navigation}) => {
 
   async function onDelete(id) {
     setDeleteLoader(id);
-    console.log(id);
+
     try {
       await firestore().collection('Coupons').doc(id).update({
         isActive: false,
@@ -74,17 +75,21 @@ const AllCoupon = ({navigation}) => {
     setDeleteLoader(-1);
   }
 
+
   async function onEndReached() {
     if (!CouponSlice.lastElement) {
       return;
     }
     try {
       const paginatedCoupon = await couponRef.startAfter(CouponSlice.lastElement||0).get();
-      Dispatch(addPaginatedDataCoupon({
-        data:paginatedCoupon.docs.map((e)=>{return {...e.data(),id:e.id}}),
-        lastElement:paginatedCoupon.docs[paginatedCoupon.docs.length-1]
-
-      }))
+      const dataCoupon = paginatedCoupon.docs.map((e)=>{return{...e.data(),id:e.id}});
+      const sendData = [...CouponSlice.data, ...dataCoupon];
+      Dispatch(
+        concatCoupon({
+          data: sendData,
+          lastElement: paginatedCoupon.docs[paginatedCoupon.docs.length - 1],
+        }),
+      );
     } catch (error) {}
   }
 
@@ -129,11 +134,10 @@ const AllCoupon = ({navigation}) => {
               </Text>
             )}
             renderItem={e => {
-              console.log(e.item.id)
               return (
                 <View style={IroningStyles.IroningContainer}>
                   <Text style={IroningStyles.HighlighText}>
-                    Coupon Code :-{' '}
+                    Coupon Code :-{' '} {e.index}
                     <Text style={IroningStyles.ValueText}>
                       {e.item?.couponCode}
                     </Text>

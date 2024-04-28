@@ -36,6 +36,12 @@ const CouponSlice = createSlice({
         data: [...state.data, ...action.payload.data],
       };
     },
+    concatCoupon: (state, action) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
+    },
   },
 });
 

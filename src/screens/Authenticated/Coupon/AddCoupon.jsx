@@ -16,11 +16,11 @@ import firestore from '@react-native-firebase/firestore';
 import CustomButton from '../../../components/UI/CustomButton';
 import {addCouponRedux} from '../../../feature/all-feature/feature-coupon';
 const AddCoupon = ({navigation}) => {
-  const [couponCode, setCouponCode] = useState('HOLI13');
+  const [couponCode, setCouponCode] = useState('');
   const Cred = useSelector(state => state.Cred);
-  const [offer, setOffer] = useState('10');
+  const [offer, setOffer] = useState('');
   const [loader, setLoader] = useState(false);
-  const [dashBoardMsg,setDashBoardMsg] = useState("HOLI 14 - Use for discount")
+  const [dashBoardMsg,setDashBoardMsg] = useState("")
   const Dispatch = useDispatch();
   const ServicePinCode = useSelector(
     state => state.ServicePinCode.planePinCodeArray,
@@ -44,8 +44,8 @@ const AddCoupon = ({navigation}) => {
         .collection('Coupons')
         .add({...couponData,createdAt:new Date()});
       ToastAndroid.show('Coupon Activated', 1);
-      // Dispatch(addCouponRedux({...couponData,id:couponsRef.id}));
-      // navigation.goBack();
+      Dispatch(addCouponRedux({...couponData,id:couponsRef.id}));
+      navigation.goBack();
     } catch (error) {
       console.log(error);
       Alert.alert(
