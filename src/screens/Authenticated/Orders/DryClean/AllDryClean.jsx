@@ -137,6 +137,9 @@ const AllDryClean = ({ navigation }) => {
       if (remark) {
         data['remark'] = remark
       }
+      if (status==orderStatus[3]){
+        data["OutForDelivery"] = true
+      }
       await updateRef.update(data);
       const orderGet = await updateRef.get();
       Dispatch(
@@ -144,7 +147,6 @@ const AllDryClean = ({ navigation }) => {
       );
       ToastAndroid.show('Order ' + status, ToastAndroid.SHORT);
       if (status == orderStatus[2]) {
-
 
         if (!ConnectedBluetoothDevice.boundAddress || !ConnectedBluetoothDevice.name) {
           Alert.alert("Alert", "Printer Not Connected")

@@ -35,6 +35,7 @@ const AlertPromptModal = ({
             value={inputValue}
             placeholder={placeholder}
             maxLength={100}
+            placeholderTextColor={"black"}
             multiline
           />
           <View style={styles.buttonContainer}>
@@ -92,6 +93,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
+    color:"black"
   },
   input: {
     borderWidth: 1,
@@ -100,6 +102,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     width: '100%',
+    color:"black"
   },
   buttonContainer: {
     flexDirection: 'row',

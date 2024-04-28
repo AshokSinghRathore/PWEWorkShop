@@ -122,6 +122,9 @@ const AllIroning = ({ navigation }) => {
       if (remark) {
         data['remark'] = remark
       }
+      if (status==orderStatus[3]){
+        data["OutForDelivery"] = true
+      }
       await updateRef.update(data);
       const orderGet = await updateRef.get();
       Dispatch(
@@ -135,33 +138,35 @@ const AllIroning = ({ navigation }) => {
         if (!ConnectedBluetoothDevice.boundAddress || !ConnectedBluetoothDevice.name) {
           Alert.alert("Alert", "Printer Not Connected")
         }
-
-        try {
-          const customerAddress = `${order?.data().Address?.House}, ${order?.data().Address?.Area}, ${order?.data().Address?.City}, ${order?.data().Address?.State}, ${order?.data().Address?.Pincode}`;
-          const CustomerName = `${order?.data().user_name}`;
-          const ContactNumber = `${order?.data().user_contact}`;
-          let price = {
-            price: order?.data().price,
-            delivery: order?.data().deliveryCharge
+        else{
+          try {
+            const customerAddress = `${order?.data().Address?.House}, ${order?.data().Address?.Area}, ${order?.data().Address?.City}, ${order?.data().Address?.State}, ${order?.data().Address?.Pincode}`;
+            const CustomerName = `${order?.data().user_name}`;
+            const ContactNumber = `${order?.data().user_contact}`;
+            let price = {
+              price: order?.data().price,
+              delivery: order?.data().deliveryCharge
+            }
+            let pickorder = {
+              date: order && order.data().PickDate
+                ? formatDate(new Date(order.data().PickDate))
+                : 'Not Assign',
+              time: order?.data().Picktime || 'Not Assign'
+            }
+            let Droporder = {
+              date: order && order.data().DropDate
+                ? formatDate(new Date(order.data().DropDate))
+                : 'Not Assign',
+              time: order?.data().Droptime || 'Not Assign'
+            }
+            await PrintBill(CustomerName, customerAddress, ContactNumber, order?.data().Ironing, "Ironing", price, pickorder, Droporder)
           }
-          let pickorder = {
-            date: order && order.data().PickDate
-              ? formatDate(new Date(order.data().PickDate))
-              : 'Not Assign',
-            time: order?.data().Picktime || 'Not Assign'
+          catch (error) {
+            console.log(error)
+            Alert.alert("Something went wrong", "Please try after some time")
           }
-          let Droporder = {
-            date: order && order.data().DropDate
-              ? formatDate(new Date(order.data().DropDate))
-              : 'Not Assign',
-            time: order?.data().Droptime || 'Not Assign'
-          }
-          await PrintBill(CustomerName, customerAddress, ContactNumber, order?.data().Ironing, "Ironing", price, pickorder, Droporder)
         }
-        catch (error) {
-          console.log(error)
-          Alert.alert("Something went wrong", "Please try after some time")
-        }
+       
 
       }
     } catch (error) {

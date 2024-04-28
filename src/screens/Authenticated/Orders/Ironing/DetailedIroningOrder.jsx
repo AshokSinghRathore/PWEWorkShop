@@ -153,6 +153,7 @@ const DetailedIroningOrder = ({ route, navigation }) => {
 
                   if (!ConnectedBluetoothDevice.boundAddress || !ConnectedBluetoothDevice.name) {
                     Alert.alert("Alert", "Printer Not Connected")
+                    return
                   }
                   try {
 

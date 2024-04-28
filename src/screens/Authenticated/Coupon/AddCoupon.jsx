@@ -6,22 +6,54 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Alert,
+  ToastAndroid,
 } from 'react-native';
 import {AppColors} from '../../../constants/color';
 import * as Animatable from 'react-native-animatable';
-
+import {useDispatch, useSelector} from 'react-redux';
+import firestore from '@react-native-firebase/firestore';
+import CustomButton from '../../../components/UI/CustomButton';
+import {addCouponRedux} from '../../../feature/all-feature/feature-coupon';
 const AddCoupon = ({navigation}) => {
-  const [couponCode, setCouponCode] = useState('');
-  const [offer, setOffer] = useState('');
-
-  const handleSubmit = () => {
-    navigation.goBack();
-    // Here, you can handle the submission of the coupon code and offer data.
-    // For example, you can make an API call to save the data to the server.
-    // Replace the console.log with your desired logic.
-    console.log('Coupon Code:', couponCode);
-    console.log('Offer:', offer);
-    // After submission, you may want to navigate to another screen or display a success message.
+  const [couponCode, setCouponCode] = useState('HOLI13');
+  const Cred = useSelector(state => state.Cred);
+  const [offer, setOffer] = useState('10');
+  const [loader, setLoader] = useState(false);
+  const [dashBoardMsg,setDashBoardMsg] = useState("HOLI 14 - Use for discount")
+  const Dispatch = useDispatch();
+  const ServicePinCode = useSelector(
+    state => state.ServicePinCode.planePinCodeArray,
+  );
+  const handleSubmit = async () => {
+    if (!couponCode || !offer||!dashBoardMsg) {
+      Alert.alert('Incomplete Detail', 'Kindly Enter All Detail');
+      return;
+    }
+    setLoader(true);
+    try {
+      const couponData = {
+        couponCode: couponCode,
+        offer: parseInt(offer),
+        pinCodes: ServicePinCode,
+        admin_uid: Cred.uid,
+        isActive:true,
+        dashboardMsg:dashBoardMsg
+      };
+      const couponsRef = await firestore()
+        .collection('Coupons')
+        .add({...couponData,createdAt:new Date()});
+      ToastAndroid.show('Coupon Activated', 1);
+      // Dispatch(addCouponRedux({...couponData,id:couponsRef.id}));
+      // navigation.goBack();
+    } catch (error) {
+      console.log(error);
+      Alert.alert(
+        'Something went wrong',
+        'Kindly Add Different Coupons, as this coupon code has been already used',
+      );
+    }
+    setLoader(false);
   };
 
   return (
@@ -30,8 +62,7 @@ const AddCoupon = ({navigation}) => {
         animation="fadeInDown"
         duration={2000}
         delay={200}
-        style={[styles.container,{width
-        :"80%"}]}>
+        style={[styles.container, {width: '80%'}]}>
         <Image
           source={require('../../../assets/coupon.png')}
           style={{width: 200, height: 200}}
@@ -41,20 +72,57 @@ const AddCoupon = ({navigation}) => {
         <TextInput
           placeholderTextColor="white"
           style={styles.input}
-          placeholder="Enter Coupon Code"
+          placeholder="Dashboard MSG"
+          maxLength={50}
+          value={dashBoardMsg}
+          onChangeText={text => setDashBoardMsg(text)}
+        />
+        <TextInput
+          placeholderTextColor="white"
+          style={styles.input}
+          placeholder="Coupon Code"
+          maxLength={18}
           value={couponCode}
           onChangeText={text => setCouponCode(text)}
         />
         <TextInput
           placeholderTextColor="white"
           style={styles.input}
-          placeholder="Enter Offer"
+          placeholder="Discount"
+          inputMode="numeric"
+          maxLength={3}
+          keyboardType="numeric"
           value={offer}
-          onChangeText={text => setOffer(text)}
+          onChangeText={text => {
+            if (/^\d+$/.test(text) || text == '') {
+              // Check if text is a number
+              const num = parseInt(text);
+              if ((num >= 0 && num <= 100) || text == '') {
+                setOffer(text);
+              } else {
+                // Alert for invalid entry (outside range)
+                Alert.alert(
+                  'Invalid Entry',
+                  'Please enter a number between 0 and 100',
+                );
+              }
+            } else {
+              // Alert for non-numeric input
+              Alert.alert('Invalid Input', 'Please enter a valid number');
+            }
+          }}
         />
-        <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit</Text>
-        </TouchableOpacity>
+
+        <CustomButton
+          label={'Submit'}
+          showLoader={loader}
+          onPress={() => {
+            if (loader) {
+              return;
+            }
+            handleSubmit();
+          }}
+        />
       </Animatable.View>
     </View>
   );
@@ -84,6 +152,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     padding: 10,
+
     fontFamily: 'Poppins-SemiBold',
   },
   submitButton: {

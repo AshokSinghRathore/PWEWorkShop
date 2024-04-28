@@ -6,7 +6,7 @@ const LoadingOverlay = ({message}) => {
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <ActivityIndicator size={'small'} color={'black'} />
       <Text
-        style={{fontSize: 16, fontFamily: 'Poppins-SemiBold', marginTop: 10}}>
+        style={{fontSize: 16, fontFamily: 'Poppins-SemiBold', marginTop: 10,color:"black"}}>
         {message ? message : 'Please Wait ..'}
       </Text>
     </View>

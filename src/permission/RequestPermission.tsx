@@ -4,6 +4,7 @@ import {Permission, RESULTS, request,requestMultiple} from 'react-native-permiss
 export async function requestPermission(permission: Permission):Promise<boolean> {
 
     const resp = await request(permission);
+    console.log(resp)
     if (resp === RESULTS.GRANTED) {
       return true;
     } else {
@@ -17,6 +18,7 @@ export async function requestPermissions(permissions: Permission[]): Promise<boo
   let granted = true;
 
   for (const [permission, result] of Object.entries(resp)) {
+    console.log(result)
     if (result !== RESULTS.GRANTED) {
       granted = false;
     }
