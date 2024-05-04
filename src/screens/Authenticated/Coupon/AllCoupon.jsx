@@ -187,7 +187,7 @@ const AllCoupon = ({navigation}) => {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   safeArea: {
     backgroundColor: AppColors.statusBarColor,
     flex: 1,

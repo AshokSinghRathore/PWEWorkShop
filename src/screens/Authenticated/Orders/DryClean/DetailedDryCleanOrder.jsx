@@ -109,6 +109,17 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                   }}
                 />
               </Text>
+             { Data?.data().couponUsed&&<>
+             
+              <Text style={styles.detailText}>
+               Coupon Code :{' '}
+                <Text style={styles.valueText}>{Data?.data().couponUsed}</Text>
+              </Text>
+              <Text style={styles.detailText}>
+                Coupon Offer:{' '}
+                <Text style={styles.valueText}>{Data?.data().couponOffer}</Text>
+              </Text>
+              </>}
               <Text style={[styles.detailText]}>
                 Delivery Price:{' '}
 

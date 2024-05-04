@@ -18,6 +18,7 @@ import EditIroningOrder from '../components/Ironing/EditIroningOrder.jsx';
 import UpdateOrderStatusDryClean from '../screens/Authenticated/Orders/DryClean/UpdateOrderStatusDryClean.jsx';
 import UpdateOrderStatusIroning from '../screens/Authenticated/Orders/Ironing/UpdateOrderStatusIroning.jsx';
 import DetailedConcern from '../screens/Authenticated/Concern/DetailedConcern.jsx';
+import SalesDashboard from '../screens/Authenticated/Sales/SalesDashboard.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
@@ -75,6 +76,10 @@ const Authenticated = () => {
 
       {/* Profile */}
       <Stack.Screen name="EditProfile" component={EditProfile} />
+      {/* ------- */}
+
+      {/* Sales  */}
+      <Stack.Screen name="SalesDashboard" component={SalesDashboard} />
       {/* ------- */}
     </Stack.Navigator>
   );

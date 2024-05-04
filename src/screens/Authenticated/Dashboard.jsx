@@ -38,16 +38,16 @@ export async function checkAndGetPermission() {
     if (!isPermit) {
       const getPermission = await requestPermission(PERMISSIONS.ANDROID.READ_MEDIA_VIDEO);
       if (!getPermission) {
-        Alert.alert("Permission Error", "Permission Denied, This Permission is Needed for Video Upload", [
-          {
-            text: "Change",
-            onPress: () => openSettings(),
-            style: "default"
-          },
-          {
-            text: "Cancel"
-          }
-        ]);
+        // Alert.alert("Permission Error", "Permission Denied, This permission are required", [
+        //   {
+        //     text: "Change",
+        //     onPress: () => openSettings(),
+        //     style: "default"
+        //   },
+        //   {
+        //     text: "Cancel"
+        //   }
+        // ]);
       }
     }
   } catch (error) {
@@ -60,13 +60,13 @@ export async function checkAndGetPermissions() {
     if (!isPermit) {
       const getPermission = await requestPermissions([PERMISSIONS.ANDROID.READ_MEDIA_VIDEO, PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION]);
       if (!getPermission) {
-        Alert.alert("Permission Error", "Permission Denied, This Permission is Needed for Video Upload", [
-          {
-            text: "Change",
-            onPress: () => openSettings(),
-            style: "default"
-          }
-        ]);
+        // Alert.alert("Permission Error", "Permission Denied, This Permission is required", [
+        //   {
+        //     text: "Change",
+        //     onPress: () => openSettings(),
+        //     style: "default"
+        //   }
+        // ]);
       }
     }
   } catch (error) {
@@ -460,6 +460,7 @@ const Dashboard = ({ navigation }) => {
               <DashboardButton
                 onPress={() => navigation.navigate('AllConcern')}
                 text={'User\nConcern'}
+              
                 image={require('../../assets/concern.png')}
               />
             </View>
@@ -475,9 +476,9 @@ const Dashboard = ({ navigation }) => {
                 image={require('../../assets/ads.png')}
               />
               <DashboardButton
-                onPress={() => navigation.navigate('AllFeedback')}
-                text={'User\nFeedbacks'}
-                image={require('../../assets/review.png')}
+                onPress={() => navigation.navigate('SalesDashboard')}
+                text={'Sales\nAnalytic'}
+                image={require('../../assets/sales.png')}
               />
             </View>
 
