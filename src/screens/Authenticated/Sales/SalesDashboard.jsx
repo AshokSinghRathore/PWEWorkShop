@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import LoadingOverlay from '../../../components/UI/LoadingOverlay';
 import {formatDate} from '../../../helpers/DateFunction';
 import {formatPrice} from '../../../helpers/formatPrice';
+import {PERMISSIONS} from 'react-native-permissions';
 
 const styles = StyleSheet.create({
   container: {
@@ -100,21 +101,26 @@ const SalesDashboard = () => {
     setLoading(true);
     try {
       const today = new Date();
-      const lastDays = new Date(today);
-      lastDays.setDate(lastDays.getDate() - (dateFilter.last7Days ? 7 : 30));
+      let startFilterDate;
 
-      let query = firestore()
-        .collection('Order')
-        .where('Address.Pincode', 'in', servicePinCode.planePinCodeArray)
-        .where('DateOfOrder', '>=', lastDays);
-
-      if (!orderTypeFilter.isBoth) {
-        query = query.where(
-          orderTypeFilter.isDryClean ? 'isDryClean' : 'isIroning',
-          '==',
-          true,
+      if (dateFilter.last7Days) {
+        startFilterDate = new Date(today);
+        startFilterDate.setDate(startFilterDate.getDate() - 7);
+      } else {
+        startFilterDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+          0,
+          0,
+          0,
         );
       }
+
+      const query = firestore()
+        .collection('Order')
+        .where('Address.Pincode', 'in', servicePinCode.planePinCodeArray)
+        .where('DateOfOrder', '>=', startFilterDate);
 
       const salesResp = await query.get();
 
@@ -156,16 +162,30 @@ const SalesDashboard = () => {
   };
 
   async function changeFilter(isBoth, isDryClean, last7Days) {
-    setSales([])
+    setSales([]);
     setLoading(true);
     try {
+      let startFilterDate;
       const today = new Date();
-      const lastDays = new Date(today);
-      lastDays.setDate(lastDays.getDate() - (last7Days ? 7 : 30));
+
+      if (last7Days) {
+        startFilterDate = new Date(today);
+        startFilterDate.setDate(startFilterDate.getDate() - 7);
+      } else {
+        startFilterDate = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+          0,
+          0,
+          0,
+        );
+      }
+
       let query = firestore()
         .collection('Order')
         .where('Address.Pincode', 'in', servicePinCode.planePinCodeArray)
-        .where('DateOfOrder', '>=', lastDays);
+        .where('DateOfOrder', '>=', startFilterDate);
 
       if (!isBoth) {
         query = query.where(
@@ -174,6 +194,7 @@ const SalesDashboard = () => {
           true,
         );
       }
+
       const salesResp = await query.get();
 
       if (!salesResp.empty) {
@@ -188,14 +209,12 @@ const SalesDashboard = () => {
     }
     setLoading(false);
   }
-
   const countPrice = () => {
     let totalPrice = 0;
     allSales.map(e => {
-      totalPrice = +e.price;
+      totalPrice += Math.trunc(parseInt(e.price));
     });
-
-    return totalPrice.toFixed(2);
+    return totalPrice;
   };
 
   return (
@@ -210,24 +229,20 @@ const SalesDashboard = () => {
           <View style={styles.dateFilterContainer}>
             <Text style={styles.headerText}> Date Filter : </Text>
             <TouchableOpacity
-              onPress={() =>
-                handleDateFilter({last7Days: true, last30Days: false})
-              }
+              onPress={() => handleDateFilter({last7Days: false, today: true})}
+              style={[
+                styles.dateFilterButton,
+                {backgroundColor: dateFilter.today ? 'grey' : 'wheat'},
+              ]}>
+              <Text style={styles.dateFilterButtonText}>Todays Sales</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => handleDateFilter({last7Days: true, today: false})}
               style={[
                 styles.dateFilterButton,
                 {backgroundColor: dateFilter.last7Days ? 'grey' : 'wheat'},
               ]}>
               <Text style={styles.dateFilterButtonText}>Last 7 Days</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() =>
-                handleDateFilter({last7Days: false, last30Days: true})
-              }
-              style={[
-                styles.dateFilterButton,
-                {backgroundColor: dateFilter.last30Days ? 'grey' : 'wheat'},
-              ]}>
-              <Text style={styles.dateFilterButtonText}>Last 30 Days</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.dateFilterContainer}>
