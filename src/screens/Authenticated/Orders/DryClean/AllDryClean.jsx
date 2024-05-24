@@ -256,7 +256,22 @@ const AllDryClean = ({ navigation }) => {
                           const customerAddress = `${item?.data().Address?.House}, ${item?.data().Address?.Area}, ${item?.data().Address?.City}, ${item?.data().Address?.State}, ${item?.data().Address?.Pincode}`;
                           const CustomerName = `${item?.data().user_name}`;
                           const ContactNumber = `${item?.data().user_contact}`;
-                          const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}`;
+                          const pickData = `Pick Time${
+                            item?.data().Picktime
+                          }\nPick Date ${
+                            item && item.data().DropDate
+                              ? formatDate(new Date(item.data().PickDate))
+                              : 'Not Assign'
+                          }`;
+                          const dropData = `Drop Time ${
+                            item?.data().Droptime
+                          }\nDrop Date ${
+                            item && item.data().DropDate
+                              ? formatDate(new Date(item.data().DropDate))
+                              : 'Not Assign'
+                          }`;
+                          const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}\n${pickData}\n${dropData}`;
+                          
                           Share.open({
                             title: "Order Address",
                             message: message,

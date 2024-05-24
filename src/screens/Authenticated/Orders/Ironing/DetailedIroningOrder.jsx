@@ -113,6 +113,7 @@ const DetailedIroningOrder = ({ route, navigation }) => {
 
                 <Text style={styles.valueText}> ₹ {Data?.data().deliveryCharge}</Text>
               </Text>
+             
               <Text style={[styles.detailText]}>
                 Packaging Price:{' '}
                 <Text style={styles.valueText}> ₹ {Data?.data().packagePrice}</Text>
@@ -120,6 +121,11 @@ const DetailedIroningOrder = ({ route, navigation }) => {
               <Text style={[styles.detailText]}>
                 Price:{' '}
                 <Text style={styles.valueText}> ₹ {Data?.data().price} {(Data?.data().usePoints || Data?.data().useWallets) ? `(${Data?.data().usePoints ? 'Points ' : ""} ${(Data?.data().usePoints && Data?.data().useWallets) ? "/" : ""} ${Data?.data().useWallets ? 'Wallet' : ""} Used )` : ""}</Text>
+              </Text>
+              <Text style={[styles.detailText]}>
+              Payment Method:{' '}
+
+                <Text style={styles.valueText}> ₹ {Data?.data().paymentMethod}</Text>
               </Text>
               <View
                 style={{

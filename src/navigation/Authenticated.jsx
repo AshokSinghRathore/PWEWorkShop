@@ -1,4 +1,4 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import Dashboard from '../screens/Authenticated/Dashboard';
 import AllIroning from '../screens/Authenticated/Orders/Ironing/AllIroning';
 import DetailedIroningOrder from '../screens/Authenticated/Orders/Ironing/DetailedIroningOrder';
@@ -19,11 +19,18 @@ import UpdateOrderStatusDryClean from '../screens/Authenticated/Orders/DryClean/
 import UpdateOrderStatusIroning from '../screens/Authenticated/Orders/Ironing/UpdateOrderStatusIroning.jsx';
 import DetailedConcern from '../screens/Authenticated/Concern/DetailedConcern.jsx';
 import SalesDashboard from '../screens/Authenticated/Sales/SalesDashboard.jsx';
+import CreateOrder from '../screens/Authenticated/CreateOrder/CreateOrder.jsx';
+import DryClean from '../screens/Authenticated/CreateOrder/DryClean.jsx';
+import DryCleanDatePicker from '../screens/Authenticated/CreateOrder/DryCleanDatePicker.jsx';
+import FinalCartDryClean from '../screens/Authenticated/CreateOrder/FinalCartDryClean.jsx';
+import IronScreen from '../screens/Authenticated/CreateOrder/IronScreen.jsx';
+import DatePicker from '../screens/Authenticated/CreateOrder/DatePicker.jsx';
+import FinalCartIroning from '../screens/Authenticated/CreateOrder/FinalCartIroning.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
     <Stack.Navigator
-      screenOptions={{ headerShown: false }}
+      screenOptions={{headerShown: false}}
       initialRouteName="Login">
       <Stack.Screen name="Dashboard" component={Dashboard} />
       {/* Ironing */}
@@ -32,8 +39,11 @@ const Authenticated = () => {
         name="DetailedIroningOrder"
         component={DetailedIroningOrder}
       />
-      <Stack.Screen name='EditIroningOrder' component={EditIroningOrder} />
-      <Stack.Screen name="UpdateOrderStatusIroning" component={UpdateOrderStatusIroning} />
+      <Stack.Screen name="EditIroningOrder" component={EditIroningOrder} />
+      <Stack.Screen
+        name="UpdateOrderStatusIroning"
+        component={UpdateOrderStatusIroning}
+      />
 
       {/* ------- */}
       {/* Dry Clean */}
@@ -42,7 +52,10 @@ const Authenticated = () => {
         name="DetailedDryCleanOrder"
         component={DetailedDryCleanOrder}
       />
-      <Stack.Screen name="UpdateOrderStatusDryClean" component={UpdateOrderStatusDryClean} />
+      <Stack.Screen
+        name="UpdateOrderStatusDryClean"
+        component={UpdateOrderStatusDryClean}
+      />
       <Stack.Screen name="EditDryCleanOrder" component={EditDryCleanOrder} />
       {/* ------- */}
 
@@ -80,6 +93,15 @@ const Authenticated = () => {
 
       {/* Sales  */}
       <Stack.Screen name="SalesDashboard" component={SalesDashboard} />
+      {/* ------- */}
+      {/* Create Order  */}
+      <Stack.Screen name="CreateOrder" component={CreateOrder} />
+      <Stack.Screen name="DryClean" component={DryClean} />
+      <Stack.Screen name="DryCleanDatePicker" component={DryCleanDatePicker} />
+      <Stack.Screen name="FinalCartDryClean" component={FinalCartDryClean} />
+      <Stack.Screen name="IronScreen" component={IronScreen} />
+      <Stack.Screen name='DatePicker' component={DatePicker} />
+      <Stack.Screen name="FinalCartIroning" component={FinalCartIroning} />
       {/* ------- */}
     </Stack.Navigator>
   );

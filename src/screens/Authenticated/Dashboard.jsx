@@ -12,31 +12,49 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import React, { useCallback, useEffect, useState } from 'react';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import React, {useCallback, useEffect, useState} from 'react';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Feather from 'react-native-vector-icons/Feather';
 import DashboardButton from '../../components/DashboardButton';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useDispatch, useSelector } from 'react-redux';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {useDispatch, useSelector} from 'react-redux';
 import firestore from '@react-native-firebase/firestore';
-import { setServicePinCode } from '../../feature/all-feature/feature-servicepincode';
+import {setServicePinCode} from '../../feature/all-feature/feature-servicepincode';
 import LoadingOverlay from '../../components/UI/LoadingOverlay';
 import auth from '@react-native-firebase/auth';
-import { clearCred } from '../../feature/all-feature/feature-cred';
-import { removeItem } from '../../helpers/AsyncStorageFunctions';
-import { checkPermission, checkPermissions } from '../../permission/checkPermission';
-import { PERMISSIONS, RESULTS, openSettings, requestMultiple } from 'react-native-permissions';
-import { requestPermission, requestPermissions } from '../../permission/RequestPermission';
-import { BluetoothManager } from 'react-native-bluetooth-escpos-printer';
+import {clearCred} from '../../feature/all-feature/feature-cred';
+import {removeItem} from '../../helpers/AsyncStorageFunctions';
+import {
+  checkPermission,
+  checkPermissions,
+} from '../../permission/checkPermission';
+import {
+  PERMISSIONS,
+  RESULTS,
+  openSettings,
+  requestMultiple,
+} from 'react-native-permissions';
+import {
+  requestPermission,
+  requestPermissions,
+} from '../../permission/RequestPermission';
+import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 import ItemList from '../../components/UI/ItemList';
-import { setBoundAddress, setName } from '../../feature/all-feature/feature-bluetooth';
+import {
+  setBoundAddress,
+  setName,
+} from '../../feature/all-feature/feature-bluetooth';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 // permission
 export async function checkAndGetPermission() {
   try {
-    const isPermit = await checkPermission(PERMISSIONS.ANDROID.READ_MEDIA_VIDEO)
+    const isPermit = await checkPermission(
+      PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+    );
     if (!isPermit) {
-      const getPermission = await requestPermission(PERMISSIONS.ANDROID.READ_MEDIA_VIDEO);
+      const getPermission = await requestPermission(
+        PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+      );
       if (!getPermission) {
         // Alert.alert("Permission Error", "Permission Denied, This permission are required", [
         //   {
@@ -51,14 +69,24 @@ export async function checkAndGetPermission() {
       }
     }
   } catch (error) {
-    Alert.alert("Permission Error", error);
+    Alert.alert('Permission Error', error);
   }
 }
 export async function checkAndGetPermissions() {
   try {
-    const isPermit = await checkPermissions([PERMISSIONS.ANDROID.READ_MEDIA_VIDEO, PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION])
+    const isPermit = await checkPermissions([
+      PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+      PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+      PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+      PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+    ]);
     if (!isPermit) {
-      const getPermission = await requestPermissions([PERMISSIONS.ANDROID.READ_MEDIA_VIDEO, PERMISSIONS.ANDROID.BLUETOOTH_SCAN, PERMISSIONS.ANDROID.BLUETOOTH_CONNECT, PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION]);
+      const getPermission = await requestPermissions([
+        PERMISSIONS.ANDROID.READ_MEDIA_VIDEO,
+        PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
+        PERMISSIONS.ANDROID.BLUETOOTH_CONNECT,
+        PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
+      ]);
       if (!getPermission) {
         // Alert.alert("Permission Error", "Permission Denied, This Permission is required", [
         //   {
@@ -70,16 +98,15 @@ export async function checkAndGetPermissions() {
       }
     }
   } catch (error) {
-    Alert.alert("Permission Error", error);
+    Alert.alert('Permission Error', error);
   }
 }
 
 // ----
 
-// bluetooth 
+// bluetooth
 
-
-const Dashboard = ({ navigation }) => {
+const Dashboard = ({navigation}) => {
   const Cred = useSelector(state => state.Cred);
   const Dispatch = useDispatch();
   const [screenLoader, setScreenLoader] = useState(false);
@@ -104,12 +131,6 @@ const Dashboard = ({ navigation }) => {
       });
       const planePinCodes = pinCodeRespExtract.map(e => e.Pincode);
 
-
-
-
-      
-
-
       Dispatch(
         setServicePinCode({
           planePinCodeArray: planePinCodes,
@@ -118,8 +139,6 @@ const Dashboard = ({ navigation }) => {
       );
 
       await checkAndGetPermissions();
-
-
     } catch (error) {
       console.log(error);
       Alert.alert(
@@ -135,7 +154,7 @@ const Dashboard = ({ navigation }) => {
                 await removeItem('token');
                 await removeItem('uid');
                 await auth().signOut();
-              } catch (error) { }
+              } catch (error) {}
             },
           },
           {
@@ -150,17 +169,9 @@ const Dashboard = ({ navigation }) => {
     setScreenLoader(false);
   }
 
-
-
-
-
-
   useEffect(() => {
     getCall();
   }, []);
-
-
-
 
   // bluetooth
   const [bleOpend, setBleOpend] = useState(false);
@@ -177,21 +188,32 @@ const Dashboard = ({ navigation }) => {
       },
     );
     if (Platform.OS === 'android') {
-      DeviceEventEmitter.addListener(BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED, rsp => {
-        deviceAlreadPaired(rsp);
-      });
-      DeviceEventEmitter.addListener(BluetoothManager.EVENT_DEVICE_FOUND, rsp => {
-        deviceFoundEvent(rsp);
-      });
+      DeviceEventEmitter.addListener(
+        BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
+        rsp => {
+          deviceAlreadPaired(rsp);
+        },
+      );
+      DeviceEventEmitter.addListener(
+        BluetoothManager.EVENT_DEVICE_FOUND,
+        rsp => {
+          deviceFoundEvent(rsp);
+        },
+      );
       // DeviceEventEmitter.addListener(BluetoothManager.EVENT_CONNECTION_LOST, () => {
       //   setName('');
       //   setBoundAddress('');
       // });
-      DeviceEventEmitter.addListener(BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT, () => {
-        ToastAndroid.show('Device Not Support Bluetooth !', ToastAndroid.LONG);
-      });
+      DeviceEventEmitter.addListener(
+        BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT,
+        () => {
+          ToastAndroid.show(
+            'Device Not Support Bluetooth !',
+            ToastAndroid.LONG,
+          );
+        },
+      );
     }
-   
   }, [deviceAlreadPaired, deviceFoundEvent, pairedDevices, scan]);
 
   const deviceAlreadPaired = useCallback(
@@ -202,7 +224,7 @@ const Dashboard = ({ navigation }) => {
       } else {
         try {
           ds = JSON.parse(rsp.devices);
-        } catch (e) { }
+        } catch (e) {}
       }
       if (ds && ds.length) {
         let pared = pairedDevices;
@@ -245,11 +267,10 @@ const Dashboard = ({ navigation }) => {
   );
 
   const scanDevices = useCallback(() => {
-    console.log("Scanning...");
+    console.log('Scanning...');
     setLoading(true);
     BluetoothManager.scanDevices().then(
       s => {
-
         // const pairedDevices = s.paired;
         var found = s.found;
         try {
@@ -261,23 +282,27 @@ const Dashboard = ({ navigation }) => {
         if (found && found.length) {
           fds = found;
         }
-        console.log(foundDs)
+        console.log(foundDs);
         setFoundDs(fds);
         setLoading(false);
       },
       er => {
         setLoading(false);
-        console.log(er)
-        Alert.alert("Bluetooth Error", "Bluetooth not started or not supported. Please try again later", [
-          {
-            text: "cancel"
-          }, {
-
-            text: "Retry",
-            onPress: () => scanDevices()
-          }
-        ]); {
-
+        console.log(er);
+        Alert.alert(
+          'Bluetooth Error',
+          'Bluetooth not started or not supported. Please try again later',
+          [
+            {
+              text: 'cancel',
+            },
+            {
+              text: 'Retry',
+              onPress: () => scanDevices(),
+            },
+          ],
+        );
+        {
         }
       },
     );
@@ -309,7 +334,7 @@ const Dashboard = ({ navigation }) => {
         } else {
           Alert.alert('Bluetooth Permission Denied');
           // ignore akses ditolak
-          setBleOpend(false)
+          setBleOpend(false);
         }
       }
       blueTooth();
@@ -319,7 +344,7 @@ const Dashboard = ({ navigation }) => {
   }, [scanDevices]);
 
   const scanBluetoothDevice = async () => {
-    console.log("e")
+    console.log('e');
     setLoading(true);
     try {
       const request = await requestMultiple([
@@ -327,20 +352,21 @@ const Dashboard = ({ navigation }) => {
         PERMISSIONS.ANDROID.BLUETOOTH_SCAN,
         PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION,
       ]);
-      if (request['android.permission.ACCESS_FINE_LOCATION'] === RESULTS.GRANTED) {
+      if (
+        request['android.permission.ACCESS_FINE_LOCATION'] === RESULTS.GRANTED
+      ) {
         scanDevices();
         setLoading(false);
       } else {
         setLoading(false);
       }
     } catch (err) {
-      setBleOpend(false)
+      setBleOpend(false);
       setLoading(false);
     }
   };
 
-  const [connectLoader, setConnectLoader] = useState("")
-
+  const [connectLoader, setConnectLoader] = useState('');
 
   const connect = row => {
     if (connectLoader || screenLoader || loading) return;
@@ -352,14 +378,14 @@ const Dashboard = ({ navigation }) => {
         Dispatch(setName(row.name || 'UNKNOWN'));
       },
       e => {
-        setConnectLoader("");
-        console.log(Object.keys(e))
-        console.log(e?.nativeStackAndroid)
-        console.log(e?.userInfo)
-        console.log(e?.code)
-        console.log(e?.message)
+        setConnectLoader('');
+        console.log(Object.keys(e));
+        console.log(e?.nativeStackAndroid);
+        console.log(e?.userInfo);
+        console.log(e?.code);
+        console.log(e?.message);
 
-        alert(e?.message || "Something Went Wrong" + "Please Try Again Later");
+        alert(e?.message || 'Something Went Wrong' + 'Please Try Again Later');
       },
     );
   };
@@ -388,9 +414,9 @@ const Dashboard = ({ navigation }) => {
                 }}>
                 <Image
                   source={require('../../assets/profile-icon.png')}
-                  style={{ height: 80, width: 80 }}
+                  style={{height: 80, width: 80}}
                 />
-                <View style={{ marginLeft: 10 }}>
+                <View style={{marginLeft: 10}}>
                   <Text
                     style={{
                       color: 'white',
@@ -427,8 +453,28 @@ const Dashboard = ({ navigation }) => {
           <KeyboardAwareScrollView
             showsVerticalScrollIndicator={false}
             bounces={false}
-            style={{ flex: 1, marginHorizontal: 10, paddingBottom: 30 }}>
-            <TouchableOpacity onPress={() => setBleOpend(true)} style={{ marginTop: 20, backgroundColor: 'palegoldenrod', padding: 10, borderRadius: 10, width: 200, alignSelf: "center", justifyContent: "center", alignItems: "center" }}><Text style={{ color: 'black', fontFamily: 'Poppins-SemiBold', fontSize: 20 }}>Connect Printer</Text></TouchableOpacity >
+            style={{flex: 1, marginHorizontal: 10, paddingBottom: 30}}>
+            <TouchableOpacity
+              onPress={() => setBleOpend(true)}
+              style={{
+                marginTop: 20,
+                backgroundColor: 'palegoldenrod',
+                padding: 10,
+                borderRadius: 10,
+                width: 200,
+                alignSelf: 'center',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: 'black',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 20,
+                }}>
+                Connect Printer
+              </Text>
+            </TouchableOpacity>
             <View
               style={{
                 marginTop: 10,
@@ -460,7 +506,6 @@ const Dashboard = ({ navigation }) => {
               <DashboardButton
                 onPress={() => navigation.navigate('AllConcern')}
                 text={'User\nConcern'}
-              
                 image={require('../../assets/concern.png')}
               />
             </View>
@@ -481,13 +526,19 @@ const Dashboard = ({ navigation }) => {
                 image={require('../../assets/sales.png')}
               />
             </View>
-
+            <View style={{marginHorizontal:10,marginTop:10}}>
+            <DashboardButton
+              onPress={() => navigation.navigate('CreateOrder')}
+              text={'Create\nOrder'}
+              image={require('../../assets/create-order.png')}
+            />
+            </View>
+           
           </KeyboardAwareScrollView>
           <Modal
             transparent
             visible={bleOpend}
-            onRequestClose={() => setBleOpend(false)}
-          >
+            onRequestClose={() => setBleOpend(false)}>
             <View
               style={{
                 flex: 1,
@@ -501,7 +552,7 @@ const Dashboard = ({ navigation }) => {
                   borderRadius: 10,
                   backgroundColor: 'white',
                   padding: 20,
-                  height: "40%"
+                  height: '40%',
                 }}>
                 <MaterialIcons
                   name="cancel"
@@ -509,7 +560,7 @@ const Dashboard = ({ navigation }) => {
                   color="black"
                   onPress={() => setBleOpend(false)}
                   style={{
-                    position: "absolute",
+                    position: 'absolute',
                     top: 10,
                     right: 10,
                   }}
@@ -520,28 +571,30 @@ const Dashboard = ({ navigation }) => {
                     fontFamily: 'Poppins-SemiBold',
                     fontSize: 16,
                     textAlign: 'center',
-                    color: "black",
-                    backgroundColor: "skyblue",
+                    color: 'black',
+                    backgroundColor: 'skyblue',
                     borderRadius: 10,
-                    marginBottom: 10
-                    , marginTop: 30
+                    marginBottom: 10,
+                    marginTop: 30,
                   }}>
                   Scan Again Bluetooth Device
                 </Text>
                 <FlatList
                   data={pairedDevices}
-
-                  renderItem={({ item, index }) => <ItemList
-                    key={index}
-                    onPress={() => connect(item)}
-                    label={item.name}
-                    value={item.address}
-                    connected={item.address === ConnectedBluetoothDevice?.boundAddress}
-                    actionText="Connect"
-                    color="#00BCD4"
-                    connectLoader={connectLoader === item.address}
-                  />}
-
+                  renderItem={({item, index}) => (
+                    <ItemList
+                      key={index}
+                      onPress={() => connect(item)}
+                      label={item.name}
+                      value={item.address}
+                      connected={
+                        item.address === ConnectedBluetoothDevice?.boundAddress
+                      }
+                      actionText="Connect"
+                      color="#00BCD4"
+                      connectLoader={connectLoader === item.address}
+                    />
+                  )}
                 />
               </View>
             </View>
