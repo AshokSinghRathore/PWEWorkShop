@@ -9,6 +9,7 @@ export async function PrintBill(
   costs,
   pickData,
   dropData,
+  paymentMethod
 ) {
   try {
     await printLogo();
@@ -19,6 +20,7 @@ export async function PrintBill(
     await printPrice(costs);
     await printDates('Pickup', pickData);
     await printDates('Drop', dropData);
+    await BluetoothEscposPrinter.printText('Payment Method : '+paymentMethod, {});
     await BluetoothEscposPrinter.printText('Signature : _______________', {});
     await BluetoothEscposPrinter.printText('\r\n', {});
     await BluetoothEscposPrinter.printText('\r\n\r\n', {});

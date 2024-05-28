@@ -13,6 +13,7 @@ import LoadingOverlay from '../../../components/UI/LoadingOverlay';
 import {formatDate} from '../../../helpers/DateFunction';
 import {formatPrice} from '../../../helpers/formatPrice';
 import {PERMISSIONS} from 'react-native-permissions';
+import { orderStatus } from '../../../constants/constant';
 
 const styles = StyleSheet.create({
   container: {
@@ -120,7 +121,8 @@ const SalesDashboard = () => {
       const query = firestore()
         .collection('Order')
         .where('Address.Pincode', 'in', servicePinCode.planePinCodeArray)
-        .where('DateOfOrder', '>=', startFilterDate);
+        .where('DateOfOrder', '>=', startFilterDate)
+        .where('status', '==', orderStatus[2])
 
       const salesResp = await query.get();
 
@@ -185,7 +187,8 @@ const SalesDashboard = () => {
       let query = firestore()
         .collection('Order')
         .where('Address.Pincode', 'in', servicePinCode.planePinCodeArray)
-        .where('DateOfOrder', '>=', startFilterDate);
+        .where('DateOfOrder', '>=', startFilterDate)
+        .where('status', '==', orderStatus[2])
 
       if (!isBoth) {
         query = query.where(
@@ -205,6 +208,7 @@ const SalesDashboard = () => {
         setSales(formattedSales);
       }
     } catch (error) {
+      console.log(error)
       Alert.alert('Something Went Wrong', 'Please Try After Some time');
     }
     setLoading(false);
@@ -309,7 +313,7 @@ const SalesDashboard = () => {
               Total Orders : {allSales.length || 0}
             </Text>
             <Text style={styles.headerText}>
-              Total Price : {formatPrice(countPrice()) || 0}
+              Total Price : {countPrice() || 0}
             </Text>
           </View>
           <View style={styles.headerRow}>
@@ -325,7 +329,7 @@ const SalesDashboard = () => {
                   {formatDate(item.DateOfOrder.toDate())}
                 </Text>
                 <Text style={styles.saleItemText}>
-                  {formatPrice(Math.trunc(item?.price || 0))}
+                  {(Math.trunc(item?.price || 0))}
                 </Text>
                 <Text style={styles.saleItemText}>
                   {item?.user_name?.length > 18

@@ -128,11 +128,13 @@ const FinalCartIroning = ({navigation, route}) => {
         value={name}
         onChangeText={setName}
         placeholder="Enter Customer name"
+        placeholderTextColor={'black'}
       />
 
       <Text style={styles.label}>Number:</Text>
       <TextInput
         style={styles.input}
+        placeholderTextColor={'black'}
         value={number}
         onChangeText={setNumber}
         placeholder="Enter Customer number"
@@ -142,6 +144,7 @@ const FinalCartIroning = ({navigation, route}) => {
         style={styles.input}
         value={tax}
         onChangeText={setTax}
+        placeholderTextColor={'black'}
         placeholder="Enter Tax (%)"
       />
       <Text style={styles.label}>Ironing Charge:</Text>
@@ -150,6 +153,7 @@ const FinalCartIroning = ({navigation, route}) => {
         value={ironingCharge}
         onChangeText={setIroningCharge}
         placeholder="Enter dry clean charge"
+        placeholderTextColor={'black'}
       />
 
       <Text style={styles.label}>Delivery Charge:</Text>
@@ -158,6 +162,7 @@ const FinalCartIroning = ({navigation, route}) => {
         value={deliveryCharge}
         onChangeText={setDeliveryCharge}
         placeholder="Enter delivery charge"
+        placeholderTextColor={'black'}
       />
 
       <TouchableOpacity
@@ -182,30 +187,35 @@ const FinalCartIroning = ({navigation, route}) => {
           value={address.House}
           onChangeText={text => setAddress({...address, House: text})}
           placeholder="House"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.City}
           onChangeText={text => setAddress({...address, City: text})}
           placeholder="City"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.Area}
           onChangeText={text => setAddress({...address, Area: text})}
           placeholder="Area"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.State}
           onChangeText={text => setAddress({...address, State: text})}
           placeholder="State"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.Pincode}
           onChangeText={text => setAddress({...address, Pincode: text})}
           placeholder="Pincode"
+          placeholderTextColor={'black'}
         />
         <CustomButton
           showLoader-={loading}
@@ -240,6 +250,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: 'black',
   },
   input: {
     borderWidth: 1,

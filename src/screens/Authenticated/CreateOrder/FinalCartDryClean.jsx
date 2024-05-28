@@ -12,7 +12,7 @@ import firestore from '@react-native-firebase/firestore';
 import {useDispatch, useSelector} from 'react-redux';
 import {orderStatus} from '../../../constants/constant';
 import {CommonActions} from '@react-navigation/native';
-import { deleteAllFromTempCart } from '../../../feature/all-feature/feature-tempcart';
+import {deleteAllFromTempCart} from '../../../feature/all-feature/feature-tempcart';
 const FinalCartDryClean = ({navigation, route}) => {
   const MainData = route.params;
   const dispatch = useDispatch();
@@ -80,7 +80,7 @@ const FinalCartDryClean = ({navigation, route}) => {
           routes: [{name: 'Dashboard'}],
         }),
       );
-      dispatch(deleteAllFromTempCart())
+      dispatch(deleteAllFromTempCart());
     } catch (error) {
       Alert.alert('Error', error?.message || 'An error occured');
     }
@@ -95,6 +95,7 @@ const FinalCartDryClean = ({navigation, route}) => {
         value={name}
         onChangeText={setName}
         placeholder="Enter Customer name"
+        placeholderTextColor={'black'}
       />
 
       <Text style={styles.label}>Number:</Text>
@@ -103,6 +104,7 @@ const FinalCartDryClean = ({navigation, route}) => {
         value={number}
         onChangeText={setNumber}
         placeholder="Enter Customer number"
+        placeholderTextColor={'black'}
       />
       <Text style={styles.label}>Tax:</Text>
       <TextInput
@@ -110,6 +112,7 @@ const FinalCartDryClean = ({navigation, route}) => {
         value={tax}
         onChangeText={setTax}
         placeholder="Enter Tax (%)"
+        placeholderTextColor={'black'}
       />
       <Text style={styles.label}>Dry Clean Charge:</Text>
       <TextInput
@@ -117,6 +120,7 @@ const FinalCartDryClean = ({navigation, route}) => {
         value={dryCleanCharge}
         onChangeText={setDryCleanCharge}
         placeholder="Enter dry clean charge"
+        placeholderTextColor={'black'}
       />
 
       <Text style={styles.label}>Delivery Charge:</Text>
@@ -125,6 +129,7 @@ const FinalCartDryClean = ({navigation, route}) => {
         value={deliveryCharge}
         onChangeText={setDeliveryCharge}
         placeholder="Enter delivery charge"
+        placeholderTextColor={'black'}
       />
 
       <Text style={styles.label}>Address:</Text>
@@ -134,30 +139,35 @@ const FinalCartDryClean = ({navigation, route}) => {
           value={address.House}
           onChangeText={text => setAddress({...address, House: text})}
           placeholder="House"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.City}
           onChangeText={text => setAddress({...address, City: text})}
           placeholder="City"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.Area}
           onChangeText={text => setAddress({...address, Area: text})}
           placeholder="Area"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.State}
           onChangeText={text => setAddress({...address, State: text})}
           placeholder="State"
+          placeholderTextColor={'black'}
         />
         <TextInput
           style={[styles.input, styles.addressInput]}
           value={address.Pincode}
           onChangeText={text => setAddress({...address, Pincode: text})}
           placeholder="Pincode"
+          placeholderTextColor={'black'}
         />
         <CustomButton
           showLoader-={loading}
@@ -179,6 +189,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: 'black',
   },
   input: {
     borderWidth: 1,

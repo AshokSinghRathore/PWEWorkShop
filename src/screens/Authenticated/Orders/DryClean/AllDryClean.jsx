@@ -216,84 +216,105 @@ const AllDryClean = ({ navigation }) => {
                 fetchNext();
               }}
               renderItem={({ item }) => {
-                const time = formatTime(item.data().DateOfOrder.toDate())
+
                 return (
                   <View style={styles.orderContainer}>
-
+                  <Text style={styles.detailText}>
+                    Customer Name :{' '}
                     <Text style={styles.valueText}>
-                      {time}
+                      {item.data().user_name}
                     </Text>
-                    <Text style={styles.detailText}>
-                      Customer Name :{' '}
-                      <Text style={styles.valueText}>
-                        {item.data().user_name}
-                      </Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Customer Contact :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().user_contact}
                     </Text>
-                    <Text style={styles.detailText}>
-                      Customer Contact : <Text style={styles.valueText}>{item?.data().user_contact}</Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Pick Time :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().Picktime}
                     </Text>
-                    <Text style={styles.detailText}>
-                      Address:{' '}
-                      <Text style={styles.valueText}>
-                        {item?.data().Address?.House +
-                          ', ' +
-                          item?.data().Address?.Area +
-                          ', ' +
-                          item?.data().Address?.City +
-                          ', ' +
-                          item?.data().Address?.State +
-                          ', ' +
-                          item?.data().Address?.Pincode}
-                      </Text>
-                      {"    "}
-                      <AntDesign
-                        name="sharealt"
-                        size={22}
-                        color={"red"}
-                        onPress={() => {
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Drop Time :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().Droptime}
+                    </Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Payment Method :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().paymentMethod}
+                    </Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Order Status :{' '}
+                    <Text style={styles.valueText}>
+                      {!item?.data().OrderPicked
+                        ? 'Order Picked'
+                        : !item?.data().InProcess
+                        ? 'Order In Process'
+                        : !item?.data().Packaging
+                        ? 'Order Packaging'
+                        : !item?.data().OutForDelivery
+                        ? 'Order Out For Delivery'
+                        : 'Order Delivered'}
+                    </Text>
+                  </Text>
 
-                          const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
-                          const customerAddress = `${item?.data().Address?.House}, ${item?.data().Address?.Area}, ${item?.data().Address?.City}, ${item?.data().Address?.State}, ${item?.data().Address?.Pincode}`;
-                          const CustomerName = `${item?.data().user_name}`;
-                          const ContactNumber = `${item?.data().user_contact}`;
-                          const pickData = `Pick Time${
-                            item?.data().Picktime
-                          }\nPick Date ${
-                            item && item.data().DropDate
-                              ? formatDate(new Date(item.data().PickDate))
-                              : 'Not Assign'
-                          }`;
-                          const dropData = `Drop Time ${
-                            item?.data().Droptime
-                          }\nDrop Date ${
-                            item && item.data().DropDate
-                              ? formatDate(new Date(item.data().DropDate))
-                              : 'Not Assign'
-                          }`;
-                          const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}\n${pickData}\n${dropData}`;
-                          
-                          Share.open({
-                            title: "Order Address",
-                            message: message,
-                          }).catch(err => {
-                          });
-                        }}
-                      />
-                    </Text>
-                    <OrderControlButton
-                      status={item.data().status}
+                  <AntDesign
+                    style={{position: 'absolute', right: 10, top: 10}}
+                    name="sharealt"
+                    size={22}
+                    color={'red'}
+                    onPress={() => {
+                      const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
+                      const customerAddress = `${
+                        item?.data().Address?.House
+                      }, ${item?.data().Address?.Area}, ${
+                        item?.data().Address?.City
+                      }, ${item?.data().Address?.State}, ${
+                        item?.data().Address?.Pincode
+                      }`;
+                      const CustomerName = `${item?.data().user_name}`;
+                      const ContactNumber = `${item?.data().user_contact}`;
+                      // pick time and date and drop time and date
+                      const pickData = `Pick Time${
+                        item?.data().Picktime
+                      }\nPick Date ${
+                        item && item.data().DropDate
+                          ? formatDate(new Date(item.data().PickDate))
+                          : 'Not Assign'
+                      }`;
+                      const dropData = `Drop Time ${
+                        item?.data().Droptime
+                      }\nDrop Date ${
+                        item && item.data().DropDate
+                          ? formatDate(new Date(item.data().DropDate))
+                          : 'Not Assign'
+                      }`;
+                      const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}\n${pickData}\n${dropData}`;
+                      Share.open({
+                        title: 'Order Address',
+                        message: message,
+                      }).catch(err => {});
+                    }}
+                  />
 
-                      onPress={() => {
-                        navigation.navigate('DetailedDryCleanOrder', item.id);
-                      }}
-                      label={"View Details"}
-                      onCheck={() => orderApproval(orderStatus[2], item)}
-                      onCross={() => {
-                        setShowPrompt({ isShow: true, item: item })
-                      }}
-                    />
-
-                  </View>
+                  <OrderControlButton
+                    status={item.data().status}
+                    onPress={() => {
+                      navigation.navigate('DetailedDryCleanOrder', item.id);
+                    }}
+                    label={'View Details'}
+                    onCheck={() => orderApproval(orderStatus[2], item)}
+                    onCross={() => {
+                      setShowPrompt({isShow: true, item: item});
+                    }}
+                  />
+                </View>
                 );
               }}
               ListEmptyComponent={() => {

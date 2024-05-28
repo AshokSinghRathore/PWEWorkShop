@@ -131,10 +131,21 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                 <Text style={styles.valueText}> ₹ {Data?.data().price} {(Data?.data().usePoints || Data?.data().useWallets) ? `(${Data?.data().usePoints ? 'Points ' : ""} ${(Data?.data().usePoints && Data?.data().useWallets) ? "/" : ""} ${Data?.data().useWallets ? 'Wallet' : ""} Used )` : ""}</Text>
               </Text>
               <Text style={[styles.detailText]}>
-              Payment Method:{' '}
-
-                <Text style={styles.valueText}> ₹ {Data?.data().paymentMethod}</Text>
+                Payment Method:{' '}
+                <Text style={styles.valueText}>
+                  {' '}
+                  {Data?.data().paymentMethod}
+                </Text>
               </Text>
+              {Data?.data().paymentId && (
+                <Text style={[styles.detailText]}>
+                  Payment Id:{' '}
+                  <Text style={styles.valueText}>
+                    {' '}
+                    {Data?.data().paymentId}
+                  </Text>
+                </Text>
+              )}
               <View
                 style={{
                   width: '100%',
@@ -190,7 +201,7 @@ const DetailedDryCleanOrder = ({ route, navigation }) => {
                       : 'Not Assign',
                     time: Data?.data().Droptime || 'Not Assign'
                   }
-                  await PrintBill(CustomerName, customerAddress, ContactNumber, Data?.data().DryClean, "Dry Clean", price,pickData,DropData)
+                  await PrintBill(CustomerName, customerAddress, ContactNumber, Data?.data().DryClean, "Dry Clean", price,pickData,DropData,Data?.data().paymentMethod)
                 } 
                   catch (error) {
                     console.log(error)

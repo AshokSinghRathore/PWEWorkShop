@@ -36,6 +36,7 @@ const AllIroning = ({navigation}) => {
     .collection('Order')
     .where('isIroning', '==', true)
     .where('Address.Pincode', 'in', ServicePinCode.planePinCodeArray)
+    .orderBy('DateOfOrder', 'desc')
     .limit(PAGE_SIZE);
   const IroningOrder = useSelector(state => state.IroningOrder);
   const [showLoader, setShowLoader] = useState(false);
@@ -185,6 +186,7 @@ const AllIroning = ({navigation}) => {
               price,
               pickorder,
               Droporder,
+              order?.data().paymentMethod,
             );
           } catch (error) {
             console.log(error);
@@ -241,57 +243,76 @@ const AllIroning = ({navigation}) => {
                     </Text>
                   </Text>
                   <Text style={styles.detailText}>
-                    Address:{' '}
+                    Pick Time :{' '}
                     <Text style={styles.valueText}>
-                      {item?.data().Address?.House +
-                        ', ' +
-                        item?.data().Address?.Area +
-                        ', ' +
-                        item?.data().Address?.City +
-                        ', ' +
-                        item?.data().Address?.State +
-                        ', ' +
-                        item?.data().Address?.Pincode}
+                      {item?.data().Picktime}
                     </Text>
-                    {'    '}
-                    <AntDesign
-                      name="sharealt"
-                      size={22}
-                      color={'red'}
-                      onPress={() => {
-                        const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
-                        const customerAddress = `${
-                          item?.data().Address?.House
-                        }, ${item?.data().Address?.Area}, ${
-                          item?.data().Address?.City
-                        }, ${item?.data().Address?.State}, ${
-                          item?.data().Address?.Pincode
-                        }`;
-                        const CustomerName = `${item?.data().user_name}`;
-                        const ContactNumber = `${item?.data().user_contact}`;
-                        // pick time and date and drop time and date
-                        const pickData = `Pick Time${
-                          item?.data().Picktime
-                        }\nPick Date ${
-                          item && item.data().DropDate
-                            ? formatDate(new Date(item.data().PickDate))
-                            : 'Not Assign'
-                        }`;
-                        const dropData = `Drop Time ${
-                          item?.data().Droptime
-                        }\nDrop Date ${
-                          item && item.data().DropDate
-                            ? formatDate(new Date(item.data().DropDate))
-                            : 'Not Assign'
-                        }`;
-                        const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}\n${pickData}\n${dropData}`;
-                        Share.open({
-                          title: 'Order Address',
-                          message: message,
-                        }).catch(err => {});
-                      }}
-                    />
                   </Text>
+                  <Text style={styles.detailText}>
+                    Drop Time :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().Droptime}
+                    </Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Order Status :{' '}
+                    <Text style={styles.valueText}>
+                      {!item?.data().OrderPicked
+                        ? 'Order Picked'
+                        : !item?.data().InProcess
+                        ? 'Order In Process'
+                        : !item?.data().Packaging
+                        ? 'Order Packaging'
+                        : !item?.data().OutForDelivery
+                        ? 'Order Out For Delivery'
+                        : 'Order Delivered'}
+                    </Text>
+                  </Text>
+                  <Text style={styles.detailText}>
+                    Payment Method :{' '}
+                    <Text style={styles.valueText}>
+                      {item?.data().paymentMethod}
+                    </Text>
+                  </Text>
+                  <AntDesign
+                    style={{position: 'absolute', right: 10, top: 10}}
+                    name="sharealt"
+                    size={22}
+                    color={'red'}
+                    onPress={() => {
+                      const workshopAddress = `${Cred.workShopAddress} ${Cred.City} ${Cred.State} ${Cred.Pincode}`;
+                      const customerAddress = `${
+                        item?.data().Address?.House
+                      }, ${item?.data().Address?.Area}, ${
+                        item?.data().Address?.City
+                      }, ${item?.data().Address?.State}, ${
+                        item?.data().Address?.Pincode
+                      }`;
+                      const CustomerName = `${item?.data().user_name}`;
+                      const ContactNumber = `${item?.data().user_contact}`;
+                      // pick time and date and drop time and date
+                      const pickData = `Pick Time${
+                        item?.data().Picktime
+                      }\nPick Date ${
+                        item && item.data().DropDate
+                          ? formatDate(new Date(item.data().PickDate))
+                          : 'Not Assign'
+                      }`;
+                      const dropData = `Drop Time ${
+                        item?.data().Droptime
+                      }\nDrop Date ${
+                        item && item.data().DropDate
+                          ? formatDate(new Date(item.data().DropDate))
+                          : 'Not Assign'
+                      }`;
+                      const message = `Workshop Address: ${workshopAddress}\nCustomer Address: ${customerAddress}\nCustomer Name: ${CustomerName}\nContact Number: ${ContactNumber}\n${pickData}\n${dropData}`;
+                      Share.open({
+                        title: 'Order Address',
+                        message: message,
+                      }).catch(err => {});
+                    }}
+                  />
+
                   <OrderControlButton
                     status={item.data().status}
                     onPress={() => {
