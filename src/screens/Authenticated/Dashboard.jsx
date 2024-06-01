@@ -526,11 +526,16 @@ const Dashboard = ({navigation}) => {
                 image={require('../../assets/sales.png')}
               />
             </View>
-            <View style={{marginHorizontal:10,marginTop:10}}>
+            <View style={{flexDirection:"row",justifyContent:"space-around",marginTop:10}}>
             <DashboardButton
               onPress={() => navigation.navigate('CreateOrder')}
               text={'Create\nOrder'}
               image={require('../../assets/create-order.png')}
+            />
+            <DashboardButton
+              onPress={() => navigation.navigate('RiderManagement')}
+              text={'Rider\nManagement'}
+              image={require('../../assets/delivery.png')}
             />
             </View>
            

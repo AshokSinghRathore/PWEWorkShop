@@ -7,7 +7,8 @@ import {
   FlatList,
   ActivityIndicator,
   ToastAndroid,
-  Button
+  Button,
+  TouchableOpacity
 } from 'react-native';
 import { AppColors } from '../../../../constants/color';
 import { useDispatch, useSelector } from 'react-redux';
@@ -27,7 +28,7 @@ import { formatDate, formatTime } from '../../../../helpers/DateFunction';
 import { PrintBill } from '../../../../helpers/PrintFunction';
 const AllDryClean = ({ navigation }) => {
   const ConnectedBluetoothDevice = useSelector(state => state.BluetoothSlice);
-
+  const [isActiveOrder, setActiveOrder] = useState(true);
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
   const PAGE_SIZE = 5;
@@ -195,10 +196,61 @@ const AllDryClean = ({ navigation }) => {
         <>
           <View style={styles.container}>
             <Text style={styles.heading}>All DryClean Orders</Text>
-
+            <View
+            style={{
+              borderWidth: 1,
+              borderColor: 'white',
+              padding: 10,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexDirection: 'row',
+              borderRadius: 10,
+            }}>
+            <TouchableOpacity
+              onPress={() => setActiveOrder(true)}
+              style={{
+                width: '40%',
+                backgroundColor: isActiveOrder ? 'green' : 'white',
+                padding: 10,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: isActiveOrder ? 'white' : 'black',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 16,
+                }}>
+                Active Order
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setActiveOrder(false)}
+              style={{
+                backgroundColor: !isActiveOrder ? 'green' : 'white',
+                padding: 10,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: !isActiveOrder ? 'white' : 'black',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 16,
+                }}>
+                Completed Order
+              </Text>
+            </TouchableOpacity>
+          </View>
             <FlatList
               contentContainerStyle={{ paddingBottom: 20 }}
-              data={DryCleanOrder.data}
+              data={
+                isActiveOrder
+                  ? DryCleanOrder.data.filter((e, i) => !e?.data()?.OutForDelivery)
+                  : DryCleanOrder.data.filter((e, i) => e?.data()?.OutForDelivery)
+              }
               keyExtractor={item => new Date().toString() + Math.random() + " " + Math.random() / 2}
               ListFooterComponent={() => {
                 return (

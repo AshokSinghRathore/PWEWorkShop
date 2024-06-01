@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   ToastAndroid,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
@@ -27,7 +28,7 @@ import {formatDate} from '../../../../helpers/DateFunction';
 import {PrintBill} from '../../../../helpers/PrintFunction';
 const AllIroning = ({navigation}) => {
   const ConnectedBluetoothDevice = useSelector(state => state.BluetoothSlice);
-
+  const [isActiveOrder, setActiveOrder] = useState(true);
   const ServicePinCode = useSelector(state => state.ServicePinCode);
   const [screenLoader, setScreenLoader] = useState(true);
   const PAGE_SIZE = 5;
@@ -201,6 +202,7 @@ const AllIroning = ({navigation}) => {
     setApprovalLoader(false);
   }
 
+
   return (
     <>
       {screenLoader ? (
@@ -208,9 +210,61 @@ const AllIroning = ({navigation}) => {
       ) : (
         <View style={styles.container}>
           <Text style={styles.heading}>All Ironing Orders</Text>
+          <View
+            style={{
+              borderWidth: 1,
+              borderColor: 'white',
+              padding: 10,
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              flexDirection: 'row',
+              borderRadius: 10,
+            }}>
+            <TouchableOpacity
+              onPress={() => setActiveOrder(true)}
+              style={{
+                width: '40%',
+                backgroundColor: isActiveOrder ? 'green' : 'white',
+                padding: 10,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: isActiveOrder ? 'white' : 'black',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 16,
+                }}>
+                Active Order
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setActiveOrder(false)}
+              style={{
+                backgroundColor: !isActiveOrder ? 'green' : 'white',
+                padding: 10,
+                borderRadius: 10,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Text
+                style={{
+                  color: !isActiveOrder ? 'white' : 'black',
+                  fontFamily: 'Poppins-SemiBold',
+                  fontSize: 16,
+                }}>
+                Completed Order
+              </Text>
+            </TouchableOpacity>
+          </View>
           <FlatList
             contentContainerStyle={{paddingBottom: 20}}
-            data={IroningOrder.data}
+            data={
+              isActiveOrder
+                ? IroningOrder.data.filter((e, i) => !e?.data()?.OutForDelivery)
+                : IroningOrder.data.filter((e, i) => e?.data()?.OutForDelivery)
+            }
             keyExtractor={item => item.id}
             ListFooterComponent={() => {
               return (
@@ -243,15 +297,15 @@ const AllIroning = ({navigation}) => {
                     </Text>
                   </Text>
                   <Text style={styles.detailText}>
-                    Pick Time :{' '}
+                    Pick  :{' '}
                     <Text style={styles.valueText}>
-                      {item?.data().Picktime}
+                      {item?.data().Picktime} | {formatDate(new Date(item?.data()?.PickDate))}
                     </Text>
                   </Text>
                   <Text style={styles.detailText}>
-                    Drop Time :{' '}
+                    Drop  :{' '}
                     <Text style={styles.valueText}>
-                      {item?.data().Droptime}
+                      {item?.data().Droptime} | {formatDate(new Date(item?.data()?.DropDate))}
                     </Text>
                   </Text>
                   <Text style={styles.detailText}>
@@ -398,36 +452,3 @@ export const IroningStyles = StyleSheet.create({
     fontFamily: 'Poppins-SemiBold',
   },
 });
-
-/* <Text style={IroningStyles.HighlighText}>
-       Cloth Type : <Text style={IroningStyles.ValueText}>0-15</Text>
-     </Text>
-     <Text style={IroningStyles.HighlighText}>
-       Press Type : <Text style={IroningStyles.ValueText}>Normal</Text>
-     </Text>
-     <Text style={IroningStyles.HighlighText}>
-       Quantity : <Text style={IroningStyles.ValueText}>10</Text>
-     </Text> */
-/* <Text style={IroningStyles.HighlighText}>
-  Delivery Preference:{' '}
-  <Text style={IroningStyles.ValueText}>Instant</Text>
-</Text>
-<Text style={IroningStyles.HighlighText}>
-  Pick Date:{' '}
-  <Text style={IroningStyles.ValueText}>23-09-2023</Text>
-</Text>
- 
-<Text style={IroningStyles.HighlighText}>
-  Pick Time:{' '}
-  <Text style={IroningStyles.ValueText}>10:00-10:15</Text>
-</Text>
-<Text style={IroningStyles.HighlighText}>
-  Drop Date:{' '}
-  <Text style={IroningStyles.ValueText}>23-09-2023</Text>
-</Text>
- 
-<Text style={IroningStyles.HighlighText}>
-  Drop Time:{' '}
-  <Text style={IroningStyles.ValueText}>19:00-19:15</Text>
-</Text>
- */

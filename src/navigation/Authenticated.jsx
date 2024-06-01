@@ -26,6 +26,9 @@ import FinalCartDryClean from '../screens/Authenticated/CreateOrder/FinalCartDry
 import IronScreen from '../screens/Authenticated/CreateOrder/IronScreen.jsx';
 import DatePicker from '../screens/Authenticated/CreateOrder/DatePicker.jsx';
 import FinalCartIroning from '../screens/Authenticated/CreateOrder/FinalCartIroning.jsx';
+import AllRider from '../screens/Authenticated/rider/AllRider.jsx';
+import {Pressable, Text} from 'react-native';
+import AddRider from '../screens/Authenticated/rider/AddRider.jsx';
 const Stack = createStackNavigator();
 const Authenticated = () => {
   return (
@@ -100,9 +103,56 @@ const Authenticated = () => {
       <Stack.Screen name="DryCleanDatePicker" component={DryCleanDatePicker} />
       <Stack.Screen name="FinalCartDryClean" component={FinalCartDryClean} />
       <Stack.Screen name="IronScreen" component={IronScreen} />
-      <Stack.Screen name='DatePicker' component={DatePicker} />
+      <Stack.Screen name="DatePicker" component={DatePicker} />
       <Stack.Screen name="FinalCartIroning" component={FinalCartIroning} />
       {/* ------- */}
+      {/* Rider Management  */}
+      <Stack.Screen
+        name="RiderManagement"
+        options={({navigation}) => {
+          return {
+            headerShown: true,
+            title: 'Rider Management',
+            headerStyle: {
+              backgroundColor: '#1ca3ac',
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+              fontWeight: 'bold',
+            },
+            headerRight: () => {
+              return (
+                <Pressable
+                  onPress={() => navigation.navigate('AddRider')}
+                  style={{
+                    backgroundColor: 'white',
+                    height: 30,
+                    width: 30,
+                    borderRadius: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    marginHorizontal: 10,
+                  }}>
+                  <Text style={{color: 'black', fontSize: 25, top: -1}}>+</Text>
+                </Pressable>
+              );
+            },
+          };
+        }}
+        component={AllRider}
+      />
+      <Stack.Screen name="AddRider" options={{
+        title: 'Add Rider',
+        headerShown: true,
+        headerStyle:{
+          backgroundColor: '#1ca3ac'
+        },
+        headerTitleStyle:{
+          color:"white"
+        },
+        headerTintColor: '#fff',
+
+      }} component={AddRider} />
     </Stack.Navigator>
   );
 };

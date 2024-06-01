@@ -241,7 +241,7 @@ const FinalCartIroning = ({navigation, route}) => {
   );
 };
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     padding: 20,
 
